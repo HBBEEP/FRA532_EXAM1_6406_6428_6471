@@ -1,0 +1,22 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/kittinook/uros_ws/install/micro_ros_msgs/local/lib/python3.10/dist-packages",
+        "/home/kittinook/LAB1_WS/install/xxx_detection/local/lib/python3.10/dist-packages",
+        "/home/kittinook/LAB1_WS/install/xxx_control/local/lib/python3.10/dist-packages",
+        "/home/kittinook/LAB1_WS/install/calibration_interfaces/local/lib/python3.10/dist-packages",
+        "/home/kittinook/LAB1_WS/install/calibration_gen/local/lib/python3.10/dist-packages",
+        "/home/kittinook/LAB1_WS/install/calibration/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/kittinook/uros_ws/install/micro_ros_msgs/local/lib/python3.10/dist-packages",
+        "/home/kittinook/LAB1_WS/install/xxx_detection/local/lib/python3.10/dist-packages",
+        "/home/kittinook/LAB1_WS/install/xxx_control/local/lib/python3.10/dist-packages",
+        "/home/kittinook/LAB1_WS/install/calibration_interfaces/local/lib/python3.10/dist-packages",
+        "/home/kittinook/LAB1_WS/install/calibration_gen/local/lib/python3.10/dist-packages",
+        "/home/kittinook/LAB1_WS/install/calibration/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ]
+}
