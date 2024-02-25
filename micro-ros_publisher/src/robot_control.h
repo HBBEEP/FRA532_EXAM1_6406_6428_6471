@@ -15,12 +15,11 @@ public:
     void end(void); 
 
     void motorControl(int speedRight, int speedLeft);
-    void robotOdometry();
 
     int *getWheelVel();
     int *getWheelPos();
     void inverseKinematics(float linear_vel, float angular_vel, float* wheelVel);
-    int *ReadWheelVelocity();
+    void readWheelVelocity(float* WheelVel);
 };
 extern ROBOT_CONTROL RobotControl;
 

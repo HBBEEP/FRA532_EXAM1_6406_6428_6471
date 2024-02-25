@@ -8,6 +8,7 @@
 
 #include <std_msgs/msg/int32.h>
 #include <geometry_msgs/msg/twist.h>
+#include <std_msgs/msg/float32_multi_array.h>
 
 #include "robot_control.h"
 
@@ -17,10 +18,11 @@
 
 void cmd_vel_callback(const void * msgin);
 
-// rcl_publisher_t publisher;
+rcl_publisher_t wheel_vel_pub;
 rcl_subscription_t cmd_vel_sub;
 
 geometry_msgs__msg__Twist cmd_vel;
+std_msgs__msg__Float32MultiArray wheel_vel;
 
 rclc_executor_t executor;
 rclc_support_t support;
@@ -42,20 +44,35 @@ void error_loop() {
 void timer_callback(rcl_timer_t * timer, int64_t last_call_time) {
   RCLC_UNUSED(last_call_time);
   if (timer != NULL) {
-    // RCSOFTCHECK(rcl_publish(&publisher, &msg, NULL));
-    // // Serial.println("Debug message");
-    // msg.data++;
-    // printf("Received: BEEPPPPPPPPPPPPP");
+  
   }
 }
+
+bool malloc_flag = false;
 
 void cmd_vel_callback(const void * msgin)
 {
   // Cast received message to used type
   const geometry_msgs__msg__Twist * msg = (const geometry_msgs__msg__Twist *)msgin;
-  float testIK[2];
-  RobotControl.inverseKinematics(msg->linear.x, msg->angular.z, testIK); 
-  RobotControl.motorControl( testIK[0], testIK[1]);
+  float robot_wheel_vel[2];
+  RobotControl.inverseKinematics(msg->linear.x, msg->angular.z, robot_wheel_vel); 
+  
+  RobotControl.motorControl( robot_wheel_vel[0], robot_wheel_vel[1]);
+  // RobotControl.motorControl( 50, 50);
+
+  static float wheel_vel_read[2];
+  RobotControl.readWheelVelocity(wheel_vel_read);
+  if (!malloc_flag)
+  {
+    wheel_vel.data.capacity = 2;
+    wheel_vel.data.size = 2;
+    wheel_vel.data.data = (float *)malloc(sizeof(float) * wheel_vel.data.capacity);
+    malloc_flag = !malloc_flag;
+  }
+  wheel_vel.data.data[0] = wheel_vel_read[0];
+  wheel_vel.data.data[1] = wheel_vel_read[1];
+
+  RCSOFTCHECK(rcl_publish(&wheel_vel_pub, &wheel_vel, NULL));
 }
 
 
@@ -64,8 +81,6 @@ void setup() {
   RobotControl.begin();
 
   Serial.begin(115200);
-  // RobotControl.motorControl(100,100);
-
   set_microros_serial_transports(Serial); // for serial 
 
 //   IPAddress agent_ip(172,20,10,2);
@@ -83,14 +98,14 @@ void setup() {
   RCCHECK(rclc_support_init(&support, 0, NULL, &allocator));
 
   // create node
-  RCCHECK(rclc_node_init_default(&node, "microros_node", "", &support));
+  RCCHECK(rclc_node_init_default(&node, "BGK_microros_node", "", &support));
 
   // create publisher
-  // RCCHECK(rclc_publisher_init_default(
-  //   &publisher,
-  //   &node,
-  //   ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
-  //   "micro_ros_platformio_node_publisher"));
+  RCCHECK(rclc_publisher_init_default(
+    &wheel_vel_pub,
+    &node,
+    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32MultiArray),
+    "BGK_wheel_vel"));
 
   // create subscriber
   RCCHECK(rclc_subscription_init_default(

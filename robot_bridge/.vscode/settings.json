@@ -8,12 +8,5 @@
         "/home/hbbeep/FRA532EXAM_WS/install/micro_ros_msgs/local/lib/python3.10/dist-packages",
         "/opt/ros/humble/lib/python3.10/site-packages",
         "/opt/ros/humble/local/lib/python3.10/dist-packages"
-    ],
-    "files.associations": {
-        "cmath": "cpp",
-        "array": "cpp",
-        "string": "cpp",
-        "string_view": "cpp",
-        "vector": "cpp"
-    }
+    ]
 }

@@ -1,0 +1,25 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/hbbeep/FRA532EXAM_WS/install/micro_ros_agent/include/**",
+        "/home/hbbeep/FRA532EXAM_WS/install/micro_ros_msgs/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/hbbeep/FRA532EXAM_WS/src/robot_bridge/include/**",
+        "/home/hbbeep/FRA532EXAM_WS/src/robot_controller/include/**",
+        "/home/hbbeep/FRA532EXAM_WS/src/uros/micro-ROS-Agent/micro_ros_agent/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

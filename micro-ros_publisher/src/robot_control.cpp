@@ -55,8 +55,7 @@ void ROBOT_CONTROL::inverseKinematics(float linear_vel, float angular_vel, float
     }
 }
 
-int * ROBOT_CONTROL::ReadWheelVelocity(){ // pointer
-    static int wheelVel[2];
+void ROBOT_CONTROL::readWheelVelocity(float* wheelVel){ // pointer
     wheelVel[0] = Motor.readSpeed(MOTORRIGHT); // Right
     wheelVel[1] = Motor.readSpeed(MOTORLEFT); // Left
 
@@ -76,7 +75,5 @@ int * ROBOT_CONTROL::ReadWheelVelocity(){ // pointer
     // rad/s
     wheelVel[0] = ((wheelVel[0] * 0.916) * 2 * PI) / 60; 
     wheelVel[1] = ((wheelVel[1] * 0.916) * 2 * PI) / 60;
-
-    return wheelVel;
 }
 ROBOT_CONTROL RobotControl; 
