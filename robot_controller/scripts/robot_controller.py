@@ -10,10 +10,16 @@ class robot_controller(Node):
         super().__init__('robot_controller')
         self.robot_timer = self.create_timer(0.5, self.timer_callback)
         self.robot_twist_publisher = self.create_publisher(Twist, '/BGK_cmd_vel', 10)
+        self.prev_time = self.get_clock().now() 
+
 
     def timer_callback(self):
-        self.get_logger().info("publish robot twist")
-        self.publish_robot_twist(50.0,100.0)
+        if ((self.get_clock().now().nanoseconds - self.prev_time.nanoseconds)/S_TO_NS < 5):
+            self.get_logger().info("publish robot twist")
+            self.publish_robot_twist(1.0,0.0)
+        else:
+            self.publish_robot_twist(1.0,0.0)
+            self.get_logger().info("===END=== (Robot should not move (may be))")
 
     def publish_robot_twist(self, linear_vel, angular_vel):
         twist = Twist()

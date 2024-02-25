@@ -76,4 +76,5 @@ void ROBOT_CONTROL::readWheelVelocity(float* wheelVel){ // pointer
     wheelVel[0] = ((wheelVel[0] * 0.916) * 2 * PI) / 60; 
     wheelVel[1] = ((wheelVel[1] * 0.916) * 2 * PI) / 60;
 }
+
 ROBOT_CONTROL RobotControl; 

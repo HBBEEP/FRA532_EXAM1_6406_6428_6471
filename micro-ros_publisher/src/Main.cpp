@@ -58,7 +58,6 @@ void cmd_vel_callback(const void * msgin)
   RobotControl.inverseKinematics(msg->linear.x, msg->angular.z, robot_wheel_vel); 
   
   RobotControl.motorControl( robot_wheel_vel[0], robot_wheel_vel[1]);
-  // RobotControl.motorControl( 50, 50);
 
   static float wheel_vel_read[2];
   RobotControl.readWheelVelocity(wheel_vel_read);

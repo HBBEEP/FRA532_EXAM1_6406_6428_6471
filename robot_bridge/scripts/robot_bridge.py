@@ -14,11 +14,14 @@ class robot_bridge(Node):
         self.robot_position = [0.0, 0.0, 0.0] # x, y, theta
         self.robot_vel = [0.0, 0.0]
         self.robot_twist = [0.0, 0.0]
-
+        self.WHEEL_RADIUS = 0.03375
+        self.WHEEL_SEPARATION = 0.16480
+ 
     def wheel_vel_callback(self, msg):
         self.robot_vel =  msg.data        
         self.robot_twist = self.forward_kinematics(self.robot_vel[0], self.robot_vel[1])
         self.calculate_wheel_odometry()
+        self.get_logger().info(f"X : {self.robot_position[0]} | Y : {self.robot_position[1]} | Z : {self.robot_position[2]}")
         
     def calculate_wheel_odometry(self):
         dt = self.get_clock().now() - self.prev_time
