@@ -16,6 +16,7 @@ class robot_bridge(Node):
         self.robot_twist = [0.0, 0.0]
         self.WHEEL_RADIUS = 0.03375
         self.WHEEL_SEPARATION = 0.16480
+        self.prev_time = self.get_clock().now()
  
     def wheel_vel_callback(self, msg):
         self.robot_vel =  msg.data        

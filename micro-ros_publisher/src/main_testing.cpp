@@ -1,46 +1,67 @@
-// #include <Arduino.h>
-// #include "robot_control.h"
+#include "MPU9250.h"
+#include <Arduino.h>
 
-// long preMilliseconds = 0;
-// float dt = 0;
+MPU9250 mpu;
 
+#define LED 13
+void setup() {
+  Serial.begin(115200);
+  Wire.begin();
+  if (!mpu.setup(0x68)) {
+    while (1) {
+      Serial.println("MPU connection failed. Please check your connection with `connection_check` example.");
+      delay(5000);
+    }
+  }
+  pinMode(LED, OUTPUT);
+}
 
+void loop() {
+  float acc_value[3] = {0, 0, 0};
+  acc_read(acc_value);
+  float x = acc_value[0];
+  float y = acc_value[1];
+  float z = acc_value[2];
+  Serial.println();
+  Serial.print("Acc X:");
+  Serial.print(x);
+  Serial.print("\t");
+  Serial.print("Acc Y:");
+  Serial.print(y);
+  Serial.print("\t");
+  Serial.print("Acc Z:");
+  Serial.println(z);
+  if (x > 0.20 || x < -0.20) {
+    digitalWrite(LED, HIGH);
+  }
+  else if (y > 0.20 || y < -0.20) {
+    digitalWrite(LED, HIGH);
+  }
+  else {
+    digitalWrite(LED, LOW);
+  }
+  delay(100);
+}
 
-// void setup() 
-// {
-//   // Initialize motor control and serial communication
-//   RobotControl.begin();
-//   Serial.begin(115200);
-//   RobotControl.motorControl(-10, -10);
-//   Serial.print("Robot Init");
-// }
+float acc_read(float * acc_in) {
+  mpu.update();
+  acc_in[0] = mpu.getAccX();
+  acc_in[1] = mpu.getAccY();
+  acc_in[2] = mpu.getAccZ();
+}
 
+void gyro_read(float * gyro_in) {
+  mpu.update();
+  gyro_in[0] = mpu.getGyroX();
+  gyro_in[1] = mpu.getGyroY();
+  gyro_in[2] = mpu.getGyroZ();
+}
 
-// void loop() 
-// {
-//   if (millis() - preMilliseconds >= 30)
-//   {
-//     dt = (millis() - preMilliseconds) / 1000.0;
-//     preMilliseconds = millis();
-
-//     // int *wheelVel = RobotControl.getWheelVel();
-//     // Serial.print("Wheel Velocity r: ");
-//     // Serial.println(wheelVel[0]);
-//     // Serial.print("Wheel Velocity l: ");
-//     // Serial.println(wheelVel[1]);
-
-//     // int *wheelPos = RobotControl.getWheelPos();
-//     // Serial.print("Wheel Pos r: ");
-//     // Serial.println(wheelVel[0]);
-//     // Serial.print("Wheel Pos l: ");
-//     // Serial.println(wheelVel[1]);
-//     float testIK[2];
-//     RobotControl.inverseKinematics(3, 4, testIK); 
-//     Serial.print("testIK 0: ");
-//     Serial.println(testIK[0]);
-//     Serial.print("testIK 1: ");
-//     Serial.println(testIK[1]);
-//   }
-// }
+void mag_read(float * mag_in) {
+  mpu.update();
+  mag_in[0] = mpu.getMagX();
+  mag_in[1] = mpu.getMagY();
+  mag_in[2] = mpu.getMagZ();
+}
 
 

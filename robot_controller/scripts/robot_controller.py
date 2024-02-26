@@ -18,7 +18,7 @@ class robot_controller(Node):
             self.get_logger().info("publish robot twist")
             self.publish_robot_twist(1.0,0.0)
         else:
-            self.publish_robot_twist(1.0,0.0)
+            self.publish_robot_twist(0.0,0.0)
             self.get_logger().info("===END=== (Robot should not move (may be))")
 
     def publish_robot_twist(self, linear_vel, angular_vel):

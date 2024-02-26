@@ -12,9 +12,9 @@
 
 #include "robot_control.h"
 
-#if !defined(MICRO_ROS_TRANSPORT_ARDUINO_SERIAL)
-#error This example is only avaliable for Arduino framework with serial transport.
-#endif
+// #if !defined(MICRO_ROS_TRANSPORT_ARDUINO_SERIAL)
+// #error This example is only avaliable for Arduino framework with serial transport.
+// #endif
 
 void cmd_vel_callback(const void * msgin);
 
@@ -80,15 +80,15 @@ void setup() {
   RobotControl.begin();
 
   Serial.begin(115200);
-  set_microros_serial_transports(Serial); // for serial 
+//   set_microros_serial_transports(Serial); // for serial 
 
-//   IPAddress agent_ip(172,20,10,2);
-//   size_t agent_port = 8888;
+  IPAddress agent_ip(172,20,10,2);
+  size_t agent_port = 8888;
 
-//   char ssid[] = "BeepBeep";
-//   char psk[] = "123456781234";
-//   Serial.println("Initial Robotttt");
-//   set_microros_wifi_transports(ssid, psk, agent_ip, agent_port);
+  char ssid[] = "BeepBeep";
+  char psk[] = "123456781234";
+  Serial.println("Initial Robotttt");
+  set_microros_wifi_transports(ssid, psk, agent_ip, agent_port);
   delay(2000);
 
   allocator = rcl_get_default_allocator();
