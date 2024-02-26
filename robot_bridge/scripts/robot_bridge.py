@@ -11,13 +11,18 @@ class robot_bridge(Node):
     def __init__(self):
         super().__init__('robot_bridge')
         self.create_subscription(Float32MultiArray, '/BGK_wheel_vel', self.wheel_vel_callback, 10)
+        self.create_subscription(Float32MultiArray, '/BKG_imu_raw', self.imu_raw_callback, 10)
         self.robot_position = [0.0, 0.0, 0.0] # x, y, theta
         self.robot_vel = [0.0, 0.0]
         self.robot_twist = [0.0, 0.0]
+        self.imu_raw = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         self.WHEEL_RADIUS = 0.03375
         self.WHEEL_SEPARATION = 0.16480
         self.prev_time = self.get_clock().now()
  
+    def imu_raw_callback(self, msg):
+        self.imu_raw = msg.data 
+
     def wheel_vel_callback(self, msg):
         self.robot_vel =  msg.data        
         self.robot_twist = self.forward_kinematics(self.robot_vel[0], self.robot_vel[1])
@@ -44,6 +49,9 @@ class robot_bridge(Node):
         robot_twist[0] = 0 if abs(robot_twist[0]) < 0.0001 else robot_twist[0] 
         robot_twist[1] = 0 if abs(robot_twist[1]) < 0.0001 else robot_twist[1] 
         return robot_twist
+    
+    def abc():
+        pass
 
 def main(args=None):
     rclpy.init(args=args)

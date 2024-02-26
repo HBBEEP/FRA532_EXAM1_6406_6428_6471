@@ -2,10 +2,14 @@
 #include <cmath>
 #include "Motor.h" 
 #include <Arduino.h>
+#include "MPU9250.h"
+
+MPU9250 mpu;
 
 void ROBOT_CONTROL::begin()
 {
-   motorBegin();
+    motorBegin();
+    imuBegin();
 }
 
 void ROBOT_CONTROL::end()
@@ -18,6 +22,34 @@ void ROBOT_CONTROL::motorBegin()
 
     Motor.begin(BaudRate, DirectionPin, &Serial2);
 
+}
+
+void ROBOT_CONTROL::imuBegin()
+{
+    if (!mpu.setup(0x68)) 
+    {  // change to your own address
+        while (1) 
+        {
+        Serial.println("MPU connection failed. Please check your connection with `connection_check` example.");
+        delay(5000);
+        }
+    }
+}
+
+void ROBOT_CONTROL::getImuAcc(float * acc_in)
+{
+    mpu.update();
+    acc_in[0] = mpu.getAccX();
+    acc_in[1] = mpu.getAccY();
+    acc_in[2] = mpu.getAccZ();
+}
+
+void ROBOT_CONTROL::getImuGyro(float * gyro_in)
+{
+    mpu.update();
+    gyro_in[0] = mpu.getGyroX();
+    gyro_in[1] = mpu.getGyroY();
+    gyro_in[2] = mpu.getGyroZ();
 }
 
 void ROBOT_CONTROL::motorControl(int speedRight, int speedLeft)

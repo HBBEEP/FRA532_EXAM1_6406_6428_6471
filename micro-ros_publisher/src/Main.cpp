@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <micro_ros_platformio.h>
 #include <stdio.h>
+#include "MPU9250.h"
 
 #include <rcl/rcl.h>
 #include <rclc/rclc.h>
@@ -12,17 +13,18 @@
 
 #include "robot_control.h"
 
-// #if !defined(MICRO_ROS_TRANSPORT_ARDUINO_SERIAL)
-// #error This example is only avaliable for Arduino framework with serial transport.
-// #endif
-
-void cmd_vel_callback(const void * msgin);
+#if !defined(MICRO_ROS_TRANSPORT_ARDUINO_SERIAL)
+#error This example is only avaliable for Arduino framework with serial transport.
+#endif
 
 rcl_publisher_t wheel_vel_pub;
+rcl_publisher_t imu_data_pub;
 rcl_subscription_t cmd_vel_sub;
 
 geometry_msgs__msg__Twist cmd_vel;
 std_msgs__msg__Float32MultiArray wheel_vel;
+std_msgs__msg__Float32MultiArray imu_data;
+
 
 rclc_executor_t executor;
 rclc_support_t support;
@@ -33,6 +35,7 @@ rcl_timer_t timer;
 #define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){error_loop();}}
 #define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){}}
 
+void cmd_vel_callback(const void * msgin);
 
 // Error handle loop
 void error_loop() {
@@ -48,48 +51,77 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time) {
   }
 }
 
-bool malloc_flag = false;
+bool malloc_wheel_flag = false;
+bool malloc_imu_flag = false;
 
 void cmd_vel_callback(const void * msgin)
 {
   // Cast received message to used type
   const geometry_msgs__msg__Twist * msg = (const geometry_msgs__msg__Twist *)msgin;
-  float robot_wheel_vel[2];
+  static float robot_wheel_vel[2];
   RobotControl.inverseKinematics(msg->linear.x, msg->angular.z, robot_wheel_vel); 
   
   RobotControl.motorControl( robot_wheel_vel[0], robot_wheel_vel[1]);
 
   static float wheel_vel_read[2];
   RobotControl.readWheelVelocity(wheel_vel_read);
-  if (!malloc_flag)
+  if (!malloc_wheel_flag)
   {
     wheel_vel.data.capacity = 2;
     wheel_vel.data.size = 2;
     wheel_vel.data.data = (float *)malloc(sizeof(float) * wheel_vel.data.capacity);
-    malloc_flag = !malloc_flag;
+    malloc_wheel_flag = !malloc_wheel_flag;
   }
   wheel_vel.data.data[0] = wheel_vel_read[0];
   wheel_vel.data.data[1] = wheel_vel_read[1];
 
+  static float imu_acc_read[3];
+  static float imu_gyro_read[3];
+  static float imu_data_read[6];
+  RobotControl.getImuAcc(imu_acc_read);
+  RobotControl.getImuGyro(imu_gyro_read);
+
+  if (!malloc_imu_flag)
+  {
+    imu_data.data.capacity = 6;
+    imu_data.data.size = 6;
+    imu_data.data.data = (float *)malloc(sizeof(float) * imu_data.data.capacity);
+    malloc_imu_flag = !malloc_imu_flag;
+  }
+
+  for (int i = 0; i < 3; i++)
+  {
+     imu_data.data.data[i] = imu_acc_read[i];
+     imu_data.data.data[i+3] = imu_gyro_read[i];
+  }
+
   RCSOFTCHECK(rcl_publish(&wheel_vel_pub, &wheel_vel, NULL));
+  RCSOFTCHECK(rcl_publish(&imu_data_pub, &imu_data, NULL));
+
+
 }
 
 
 void setup() {
   // Configure serial transport
-  RobotControl.begin();
 
+  // RobotControl.motorBegin();
   Serial.begin(115200);
-//   set_microros_serial_transports(Serial); // for serial 
+  Wire.begin();
+  // RobotControl.imuBegin();
+  RobotControl.begin();
+  
+  set_microros_serial_transports(Serial); // for serial 
 
-  IPAddress agent_ip(172,20,10,2);
-  size_t agent_port = 8888;
+  // IPAddress agent_ip(172,20,10,2);
+  // size_t agent_port = 8888;
 
-  char ssid[] = "BeepBeep";
-  char psk[] = "123456781234";
-  Serial.println("Initial Robotttt");
-  set_microros_wifi_transports(ssid, psk, agent_ip, agent_port);
+  // char ssid[] = "BeepBeep";
+  // char psk[] = "123456781234";
+  // Serial.println("Initial Robotttt");
+  // set_microros_wifi_transports(ssid, psk, agent_ip, agent_port);
   delay(2000);
+
 
   allocator = rcl_get_default_allocator();
 
@@ -106,6 +138,12 @@ void setup() {
     ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32MultiArray),
     "BGK_wheel_vel"));
 
+  RCCHECK(rclc_publisher_init_default(
+    &imu_data_pub,
+    &node,
+    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32MultiArray),
+    "BGK_imu_data"));
+
   // create subscriber
   RCCHECK(rclc_subscription_init_default(
     &cmd_vel_sub,  
@@ -113,7 +151,6 @@ void setup() {
     ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, Twist),
     "BGK_cmd_vel"));
 
-  // create timer,
   const unsigned int timer_timeout = 1000;
   RCCHECK(rclc_timer_init_default(
     &timer,
@@ -122,7 +159,7 @@ void setup() {
     timer_callback));
 
   // create executor
-  RCCHECK(rclc_executor_init(&executor, &support.context, 2, &allocator));
+  RCCHECK(rclc_executor_init(&executor, &support.context, 5, &allocator));
   RCCHECK(rclc_executor_add_timer(&executor, &timer));
   RCCHECK(rclc_executor_add_subscription(&executor, &cmd_vel_sub, &cmd_vel, &cmd_vel_callback, ON_NEW_DATA))
   // msg.data = 0;

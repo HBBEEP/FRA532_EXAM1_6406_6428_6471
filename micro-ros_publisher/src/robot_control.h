@@ -5,7 +5,7 @@
 
 class ROBOT_CONTROL{
 private:
-    void motorBegin();
+
     float ikConstant[2][2] = {{1/WHEEL_RADIUS, (0.5 * WHEEL_SEPARATION )/WHEEL_RADIUS}, 
                               {1/WHEEL_RADIUS, -(0.5 * WHEEL_SEPARATION )/WHEEL_RADIUS}};
 
@@ -13,13 +13,18 @@ private:
 public:
     void begin();
     void end(void); 
-
+    void motorBegin();
+    void imuBegin();
     void motorControl(int speedRight, int speedLeft);
 
     int *getWheelVel();
     int *getWheelPos();
+    
     void inverseKinematics(float linear_vel, float angular_vel, float* wheelVel);
     void readWheelVelocity(float* WheelVel);
+    void getImuAcc(float * acc_in);
+    void getImuGyro(float * gyro_in);
+
 };
 extern ROBOT_CONTROL RobotControl;
 
