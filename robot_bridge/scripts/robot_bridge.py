@@ -2,24 +2,44 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32MultiArray
+from ament_index_python.packages import get_package_share_directory
+import os
+import yaml
 import math
 import numpy as np
 from rclpy.constants import S_TO_NS
-
+from sensor_msgs.msg import Imu
 
 class robot_bridge(Node):
     def __init__(self):
         super().__init__('robot_bridge')
         self.create_subscription(Float32MultiArray, '/BGK_wheel_vel', self.wheel_vel_callback, 10)
-        self.create_subscription(Float32MultiArray, '/BKG_imu_raw', self.imu_raw_callback, 10)
+        self.create_subscription(Float32MultiArray, '/BGK_imu_raw', self.imu_raw_callback, 10)
+
+        self.imu_data_publisher = self.create_publisher(Imu, '/BKG_imu_data', 10)
+
+        self.imu_sent_timer = self.create_timer(0.1, self.timer_callback)
+
         self.robot_position = [0.0, 0.0, 0.0] # x, y, theta
         self.robot_vel = [0.0, 0.0]
         self.robot_twist = [0.0, 0.0]
         self.imu_raw = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         self.WHEEL_RADIUS = 0.03375
         self.WHEEL_SEPARATION = 0.16480
+
+        self.lx_offset = 0.0
+        self.ly_offset = 0.0
+        self.lz_offset = 0.0
+
+        self.gx_offset = 0.0
+        self.gy_offset = 0.0
+        self.gz_offset = 0.0
+        self.load_yaml_file()
         self.prev_time = self.get_clock().now()
- 
+    
+    def timer_callback(self):
+        self.imu_data_pub()
+
     def imu_raw_callback(self, msg):
         self.imu_raw = msg.data 
 
@@ -50,8 +70,34 @@ class robot_bridge(Node):
         robot_twist[1] = 0 if abs(robot_twist[1]) < 0.0001 else robot_twist[1] 
         return robot_twist
     
-    def abc():
-        pass
+    def imu_data_pub(self):
+        imu_msg = Imu()
+        imu_msg.linear_acceleration.x = float(self.imu_raw[0]) - self.lx_offset
+        imu_msg.linear_acceleration.y = float(self.imu_raw[1]) - self.ly_offset
+        imu_msg.linear_acceleration.z = float(self.imu_raw[2]) - self.lz_offset
+        # Gyroscope data in rad/s
+        imu_msg.angular_velocity.x = float(self.imu_raw[3]) - self.gx_offset
+        imu_msg.angular_velocity.y = float(self.imu_raw[4]) - self.gy_offset
+        imu_msg.angular_velocity.z = float(self.imu_raw[5]) - self.gz_offset
+        self.imu_data_publisher.publish(imu_msg)        
+
+
+    def load_yaml_file(self):
+        package_share_directory = get_package_share_directory('robot_bridge')
+        parts = package_share_directory.split(os.path.sep)
+        cleaned_package_share_directory = os.path.sep.join(parts[:-4])
+        yaml_file_path = os.path.join(cleaned_package_share_directory, 'src/robot_bridge/config', 'test.yaml')
+        with open(yaml_file_path, 'r') as yaml_file:
+            config = yaml.safe_load(yaml_file)
+
+        self.lx_offset = config['acc']['mean'][0]
+        self.ly_offset = config['acc']['mean'][1]
+        self.lz_offset = config['acc']['mean'][2]
+
+        self.gx_offset = config['gyro']['mean'][0]
+        self.gy_offset = config['gyro']['mean'][1]
+        self.gz_offset = config['gyro']['mean'][2]
+
 
 def main(args=None):
     rclpy.init(args=args)

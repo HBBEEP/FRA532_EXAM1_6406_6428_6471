@@ -14,11 +14,13 @@ class test_file(Node):
         super().__init__('test_file')
         # Example data
         self.data = {
-            'name': 'John',
-            'age': 30,
-            'city': 'New York'
+            'mean': [1.0, 2.0, -1.0],
+            'covariance': [
+                [0.1, 0.1, 0.0],
+                [0.1, 0.2, -0.1],
+                [0.0, -0.1, 0.3]
+            ]
         }
-
         # Path to the YAML file
 
         package_share_directory = get_package_share_directory('robot_bridge')
@@ -39,6 +41,20 @@ class test_file(Node):
             yaml.dump(data, yaml_file, default_flow_style=False)
         print(f"Data saved to {yaml_file_path}")
 
+    # def read_yaml_file(self, data):
+    #     # Load YAML file
+    #     with open('config/test.yaml', 'r') as file:
+    #         config = yaml.safe_load(file)
+
+    #     # Access values from the loaded YAML
+    #     param1 = config['acc']
+    #     param2 = config['gyro']
+
+    #     print(f"param1: {param1}")
+    #     print(f"param2: {param2}")
+
+    #     yaml_file_path
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -49,3 +65,5 @@ def main(args=None):
 
 if __name__=='__main__':
     main()
+
+            
