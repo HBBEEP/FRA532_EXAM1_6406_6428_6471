@@ -35,8 +35,6 @@ rcl_timer_t timer;
 #define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){error_loop();}}
 #define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){}}
 
-void cmd_vel_callback(const void * msgin);
-
 // Error handle loop
 void error_loop() {
   while(1) {
@@ -44,15 +42,51 @@ void error_loop() {
   }
 }
 
+bool malloc_wheel_flag = false;
+bool malloc_imu_flag = false;
+
+
 void timer_callback(rcl_timer_t * timer, int64_t last_call_time) {
   RCLC_UNUSED(last_call_time);
   if (timer != NULL) {
   
+    static float wheel_vel_read[2];
+    RobotControl.readWheelVelocity(wheel_vel_read);
+    if (!malloc_wheel_flag)
+    {
+      wheel_vel.data.capacity = 2;
+      wheel_vel.data.size = 2;
+      wheel_vel.data.data = (float *)malloc(sizeof(float) * wheel_vel.data.capacity);
+      malloc_wheel_flag = !malloc_wheel_flag;
+    }
+    wheel_vel.data.data[0] = wheel_vel_read[0];
+    wheel_vel.data.data[1] = wheel_vel_read[1];
+
+    static float imu_acc_read[3];
+    static float imu_gyro_read[3];
+    static float imu_data_read[6];
+    RobotControl.getImuAcc(imu_acc_read);
+    RobotControl.getImuGyro(imu_gyro_read);
+
+    if (!malloc_imu_flag)
+    {
+      imu_data.data.capacity = 6;
+      imu_data.data.size = 6;
+      imu_data.data.data = (float *)malloc(sizeof(float) * imu_data.data.capacity);
+      malloc_imu_flag = !malloc_imu_flag;
+    }
+
+    for (int i = 0; i < 3; i++)
+    {
+      imu_data.data.data[i] = imu_acc_read[i];
+      imu_data.data.data[i+3] = imu_gyro_read[i];
+    }
+
+    RCSOFTCHECK(rcl_publish(&wheel_vel_pub, &wheel_vel, NULL));
+    RCSOFTCHECK(rcl_publish(&imu_data_pub, &imu_data, NULL));
+
   }
 }
-
-bool malloc_wheel_flag = false;
-bool malloc_imu_flag = false;
 
 void cmd_vel_callback(const void * msgin)
 {
@@ -60,45 +94,7 @@ void cmd_vel_callback(const void * msgin)
   const geometry_msgs__msg__Twist * msg = (const geometry_msgs__msg__Twist *)msgin;
   static float robot_wheel_vel[2];
   RobotControl.inverseKinematics(msg->linear.x, msg->angular.z, robot_wheel_vel); 
-  
   RobotControl.motorControl( robot_wheel_vel[0], robot_wheel_vel[1]);
-
-  static float wheel_vel_read[2];
-  RobotControl.readWheelVelocity(wheel_vel_read);
-  if (!malloc_wheel_flag)
-  {
-    wheel_vel.data.capacity = 2;
-    wheel_vel.data.size = 2;
-    wheel_vel.data.data = (float *)malloc(sizeof(float) * wheel_vel.data.capacity);
-    malloc_wheel_flag = !malloc_wheel_flag;
-  }
-  wheel_vel.data.data[0] = wheel_vel_read[0];
-  wheel_vel.data.data[1] = wheel_vel_read[1];
-
-  static float imu_acc_read[3];
-  static float imu_gyro_read[3];
-  static float imu_data_read[6];
-  RobotControl.getImuAcc(imu_acc_read);
-  RobotControl.getImuGyro(imu_gyro_read);
-
-  if (!malloc_imu_flag)
-  {
-    imu_data.data.capacity = 6;
-    imu_data.data.size = 6;
-    imu_data.data.data = (float *)malloc(sizeof(float) * imu_data.data.capacity);
-    malloc_imu_flag = !malloc_imu_flag;
-  }
-
-  for (int i = 0; i < 3; i++)
-  {
-     imu_data.data.data[i] = imu_acc_read[i];
-     imu_data.data.data[i+3] = imu_gyro_read[i];
-  }
-
-  RCSOFTCHECK(rcl_publish(&wheel_vel_pub, &wheel_vel, NULL));
-  RCSOFTCHECK(rcl_publish(&imu_data_pub, &imu_data, NULL));
-
-
 }
 
 
@@ -110,7 +106,7 @@ void setup() {
   Wire.begin();
   // RobotControl.imuBegin();
   RobotControl.begin();
-  
+
   set_microros_serial_transports(Serial); // for serial 
 
   // IPAddress agent_ip(172,20,10,2);
@@ -142,7 +138,7 @@ void setup() {
     &imu_data_pub,
     &node,
     ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32MultiArray),
-    "BGK_imu_data"));
+    "BGK_imu_raw"));
 
   // create subscriber
   RCCHECK(rclc_subscription_init_default(
@@ -151,7 +147,7 @@ void setup() {
     ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, Twist),
     "BGK_cmd_vel"));
 
-  const unsigned int timer_timeout = 1000;
+  const unsigned int timer_timeout = 10; // ms 
   RCCHECK(rclc_timer_init_default(
     &timer,
     &support,
@@ -159,7 +155,7 @@ void setup() {
     timer_callback));
 
   // create executor
-  RCCHECK(rclc_executor_init(&executor, &support.context, 5, &allocator));
+  RCCHECK(rclc_executor_init(&executor, &support.context, 6, &allocator));
   RCCHECK(rclc_executor_add_timer(&executor, &timer));
   RCCHECK(rclc_executor_add_subscription(&executor, &cmd_vel_sub, &cmd_vel, &cmd_vel_callback, ON_NEW_DATA))
   // msg.data = 0;
@@ -167,6 +163,6 @@ void setup() {
 }
 
 void loop() {
-  delay(100);
-  RCSOFTCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100)));
+  delay(10);
+  RCSOFTCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(10)));
 }

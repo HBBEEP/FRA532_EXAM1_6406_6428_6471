@@ -25,6 +25,8 @@ endif()
 
 install(PROGRAMS
   scripts/robot_bridge.py
+  scripts/sensor_calibration.py
+  scripts/test_1.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
