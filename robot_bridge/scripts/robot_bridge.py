@@ -70,29 +70,16 @@ class robot_bridge(Node):
         self.robot_position[1] += dy
         self.robot_position[2] += dtheta
         self.robot_position[2] = math.atan2(math.sin(self.robot_position[2]), math.cos(self.robot_position[2]))
-        
-        t = TransformStamped()
-        t.header.stamp = self.get_clock().now().to_msg()
-        t.header.frame_id = 'odom'
-        t.child_frame_id = 'base_footprint'
-        t.transform.translation.x = self.robot_position[0] 
-        t.transform.translation.y = self.robot_position[1] 
-        t.transform.translation.z = 0.0
-        q = tf_transformations.quaternion_from_euler(0, 0, self.robot_position[2])
-        t.transform.rotation.x = q[0]
-        t.transform.rotation.y = q[1]
-        t.transform.rotation.z = q[2]
-        t.transform.rotation.w = q[3]
-        self.odom_broadcaster.sendTransform(t)
 
         odom = Odometry()
         odom.header.stamp = self.get_clock().now().to_msg()
         odom.header.frame_id = "odom"
-        
         # set the position
         odom.pose.pose.position.x = self.robot_position[0] 
         odom.pose.pose.position.y = self.robot_position[1] 
         odom.pose.pose.position.z = 0.0
+        q = tf_transformations.quaternion_from_euler(0, 0, self.robot_position[2])
+
         odom.pose.pose.orientation.x = q[0]
         odom.pose.pose.orientation.y = q[1]
         odom.pose.pose.orientation.z = q[2]
@@ -122,6 +109,7 @@ class robot_bridge(Node):
                                  0.0, 0.0, 0.0, 0.0, 0.0, 0.01]
         
         # measure covariance  น้อย e-9 เยอะ 100 
+        self.prev_time = self.get_clock().now()
 
         self.odom_publisher.publish(odom)
 
@@ -134,7 +122,6 @@ class robot_bridge(Node):
         robot_twist[1] = 0 if abs(robot_twist[1]) < 0.0001 else robot_twist[1] 
         return robot_twist
     
-
 
     def imu_data_pub(self):
         imu_msg = Imu()
