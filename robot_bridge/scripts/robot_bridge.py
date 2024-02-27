@@ -74,6 +74,8 @@ class robot_bridge(Node):
         odom = Odometry()
         odom.header.stamp = self.get_clock().now().to_msg()
         odom.header.frame_id = "odom"
+        odom.child_frame_id = "base"
+
         # set the position
         odom.pose.pose.position.x = self.robot_position[0] 
         odom.pose.pose.position.y = self.robot_position[1] 
@@ -86,7 +88,6 @@ class robot_bridge(Node):
         odom.pose.pose.orientation.w = q[3]
 
         # set the velocity
-        odom.child_frame_id = "base_footprint"
         odom.twist.twist.linear.x = self.robot_twist[0]
         odom.twist.twist.linear.y = 0.0
         odom.twist.twist.linear.z = 0.0
