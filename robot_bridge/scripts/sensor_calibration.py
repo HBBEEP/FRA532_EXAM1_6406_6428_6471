@@ -12,7 +12,7 @@ import yaml
 class sensor_calibration(Node):
     def __init__(self):
         super().__init__('sensor_calibration')
-        self.create_subscription(Float32MultiArray, '/BGK_imu_raw', self.imu_callback, 10)
+        self.create_subscription(Float32MultiArray, '/imu_raw', self.imu_callback, 10)
         self.iteration = 10
         self.reset()
 
@@ -116,7 +116,7 @@ class sensor_calibration(Node):
         package_share_directory = get_package_share_directory('robot_bridge')
         parts = package_share_directory.split(os.path.sep)
         cleaned_package_share_directory = os.path.sep.join(parts[:-4])
-        yaml_file_path = os.path.join(cleaned_package_share_directory, 'src/robot_bridge/config', 'test.yaml')
+        yaml_file_path = os.path.join(cleaned_package_share_directory, 'src/robot_bridge/config', 'sensor_calibration.yaml')
         with open(yaml_file_path, 'w') as yaml_file:
             yaml.dump(data, yaml_file, default_flow_style=False)
         print(f"Data saved to {yaml_file_path}")

@@ -9,7 +9,7 @@ class robot_controller(Node):
     def __init__(self):
         super().__init__('robot_controller')
         self.robot_timer = self.create_timer(0.1, self.timer_callback)
-        self.robot_twist_publisher = self.create_publisher(Twist, '/BGK_cmd_vel', 10)
+        self.robot_twist_publisher = self.create_publisher(Twist, '/cmd_vel', 10)
         self.prev_time = self.get_clock().now() 
 
 

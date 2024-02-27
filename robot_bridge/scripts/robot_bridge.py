@@ -17,8 +17,8 @@ from tf2_ros import TransformBroadcaster
 class robot_bridge(Node):
     def __init__(self):
         super().__init__('robot_bridge')
-        self.create_subscription(Float32MultiArray, '/BGK_wheel_vel', self.wheel_vel_callback, 10)
-        self.create_subscription(Float32MultiArray, '/BGK_imu_raw', self.imu_raw_callback, 10)
+        self.create_subscription(Float32MultiArray, '/wheel_vel', self.wheel_vel_callback, 10)
+        self.create_subscription(Float32MultiArray, '/imu_raw', self.imu_raw_callback, 10)
 
         self.imu_data_publisher = self.create_publisher(Imu, '/imu/data', 10)
         self.odom_publisher = self.create_publisher(Odometry,'/wheel/odom',10) 
@@ -155,7 +155,7 @@ class robot_bridge(Node):
         package_share_directory = get_package_share_directory('robot_bridge')
         parts = package_share_directory.split(os.path.sep)
         cleaned_package_share_directory = os.path.sep.join(parts[:-4])
-        yaml_file_path = os.path.join(cleaned_package_share_directory, 'src/robot_bridge/config', 'test.yaml')
+        yaml_file_path = os.path.join(cleaned_package_share_directory, 'src/robot_bridge/config', 'sensor_calibration.yaml')
         with open(yaml_file_path, 'r') as yaml_file:
             config = yaml.safe_load(yaml_file)
 

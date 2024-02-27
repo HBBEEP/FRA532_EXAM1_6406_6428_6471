@@ -132,20 +132,20 @@ void setup() {
     &wheel_vel_pub,
     &node,
     ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32MultiArray),
-    "BGK_wheel_vel"));
+    "wheel_vel"));
 
   RCCHECK(rclc_publisher_init_default(
     &imu_data_pub,
     &node,
     ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32MultiArray),
-    "BGK_imu_raw"));
+    "imu_raw"));
 
   // create subscriber
   RCCHECK(rclc_subscription_init_default(
     &cmd_vel_sub,  
     &node,
     ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, Twist),
-    "BGK_cmd_vel"));
+    "cmd_vel"));
 
   const unsigned int timer_timeout = 10; // ms 
   RCCHECK(rclc_timer_init_default(
