@@ -35,5 +35,7 @@ install(PROGRAMS
 install(DIRECTORY
   # add directories here
   scripts
+  launch
+  config
   DESTINATION share/${PROJECT_NAME})
 ament_package()
