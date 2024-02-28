@@ -1,11 +1,13 @@
 #!/usr/bin/python3
 import rclpy
 from rclpy.node import Node
+from std_msgs.msg import Int8
 from geometry_msgs.msg import Twist
 from rclpy.constants import S_TO_NS
 import math
 import tf_transformations
 from geometry_msgs.msg import TransformStamped
+from tf2_ros import TransformBroadcaster
 
 
 class robot_controller(Node):
@@ -13,18 +15,36 @@ class robot_controller(Node):
         super().__init__('robot_controller')
         self.robot_timer = self.create_timer(0.1, self.timer_callback)
         self.robot_twist_publisher = self.create_publisher(Twist, '/cmd_vel', 10)
-        self.prev_time = self.get_clock().now() 
-        self.robot_twist = [0.0, 0.0]
 
+        self.create_subscription(Int8, '/robot_command', self.robot_command_callback, 10)
+
+        self.prev_time = None
+        self.robot_twist = [0.0, 0.0]
+        self.robot_position = [0.0, 0.0, 0.0]
+        self.odom_broadcaster = TransformBroadcaster(self)
+        self.command = 0
+        self.prev_command = None
 
     def timer_callback(self):
-        if ((self.get_clock().now().nanoseconds - self.prev_time.nanoseconds)/S_TO_NS < 5):
-            self.get_logger().info("publish robot twist")
-            self.publish_robot_twist(1.0,0.0)
-        else:
-            self.publish_robot_twist(0.0,0.0)
-            self.get_logger().info("===END=== (Robot should not move (may be))")
-    
+        if (self.prev_command != self.command):
+            self.prev_time = self.get_clock().now() 
+
+            if (self.command == 0):
+                self.get_logger().info("==== IDLE STATE ====")
+            elif (self.command == 1):
+                self.get_logger().info("==== SQUARE ====")
+                self.rectangle_path()
+            elif (self.command == 2):
+                self.get_logger().info("==== CIRCLE ====")
+                self.circle_path()
+
+        self.prev_command = self.command
+
+            
+    def robot_command_callback(self, msg):
+        if (msg.data != self.command):
+            self.command = msg.data
+
     def publish_robot_twist(self, linear_vel, angular_vel):
         twist = Twist()
         twist.linear.x = linear_vel
@@ -59,6 +79,25 @@ class robot_controller(Node):
         self.odom_broadcaster.sendTransform(t)
         self.prev_time = self.get_clock().now() 
 
+    def rectangle_path(self):
+        spent_time = (self.get_clock().now().nanoseconds - self.prev_time.nanoseconds)/S_TO_NS
+        if (spent_time > 0 and spent_time < 10):
+            self.publish_robot_twist(0.0, -0.157)
+        elif (spent_time > 10 and spent_time < 20):
+            self.publish_robot_twist(0.2, 0.0)
+        elif (spent_time > 20 and spent_time < 30):
+            self.publish_robot_twist(0.0, -0.157)
+        elif (spent_time > 30 and spent_time < 38):
+            self.publish_robot_twist(0.2, 0.0)
+        else:
+            self.publish_robot_twist(0.0, 0.0)
+
+    def circle_path(self):
+        spent_time = (self.get_clock().now().nanoseconds - self.prev_time.nanoseconds)/S_TO_NS
+        if (spent_time > 0 and spent_time < 10):
+            self.publish_robot_twist(0.2, -0.1)
+        else:
+            self.publish_robot_twist(0.0, 0.0)
 
 
 def main(args=None):

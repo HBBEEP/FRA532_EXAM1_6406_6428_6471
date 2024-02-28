@@ -44,8 +44,6 @@ class robot_bridge(Node):
         self.acc_cov = []
         self.gyro_cov = []
         self.load_yaml_file()
-        self.odom_broadcaster = TransformBroadcaster(self)
-
         self.prev_time = self.get_clock().now()
 
     def timer_callback(self):
@@ -74,7 +72,7 @@ class robot_bridge(Node):
         odom = Odometry()
         odom.header.stamp = self.get_clock().now().to_msg()
         odom.header.frame_id = "odom"
-        odom.child_frame_id = "base"
+        odom.child_frame_id = "base_footprint"
 
         # set the position
         odom.pose.pose.position.x = self.robot_position[0] 
