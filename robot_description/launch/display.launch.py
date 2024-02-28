@@ -10,12 +10,10 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 
 def generate_launch_description():
-    bumperbot_description_dir = get_package_share_directory("robot_description")
+    robot_description_dir = get_package_share_directory("robot_description")
 
     model_arg = DeclareLaunchArgument(name="model", default_value=os.path.join(
-                                        bumperbot_description_dir, "urdf", "BGK_robot.urdf.xacro"
-                                        ),
-                                      description="Absolute path to robot urdf file")
+                                        robot_description_dir, "urdf", "BGK_robot.urdf.xacro"))
 
     robot_description = ParameterValue(Command(["xacro ", LaunchConfiguration("model")]),
                                        value_type=str)
@@ -31,17 +29,11 @@ def generate_launch_description():
         executable="rviz2",
         name="rviz2",
         output="screen",
-        arguments=["-d", os.path.join(bumperbot_description_dir, "rviz", "display.rviz")],
-    )
-
-    tf_control = Node(
-        package='robot_description',
-        executable='tf_control.py'
+        arguments=["-d", os.path.join(robot_description_dir, "rviz", "display.rviz")],
     )
 
     return LaunchDescription([
         model_arg,
         robot_state_publisher_node,
-        rviz_node,
-        tf_control
+        rviz_node
     ])

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<robot name="bumperbot" xmlns:xacro="http://ros.org/wiki/xacro">
+<robot name="BGK_bot" xmlns:xacro="http://ros.org/wiki/xacro">
     <link name="base_footprint"/>
 
     <link name="base_link">
@@ -8,7 +8,6 @@
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
                 <box size="0.15 0.1 0.05"/>
-                <!-- <cylinder length="0.1" radius="0.2" /> -->
             </geometry>
         </collision>
 
@@ -30,14 +29,12 @@
         <visual>
         <origin xyz="0 0 0" rpy="1.57 0 0" />
         <geometry>
-            <!-- <cylinder length="0.007" radius="0.03" /> -->
             <mesh filename="package://robot_description/meshes/wheel_right_link.STL" />
         </geometry>
         </visual>
         <collision>
             <origin xyz="0 0 0" rpy="1.57 0 0" />
             <geometry>
-                <!-- <sphere radius="0.033"/> -->
                 <cylinder length="0.007" radius="0.03" />
             </geometry>
         </collision>
@@ -54,14 +51,12 @@
         <visual>
             <origin xyz="0 0 0" rpy="-1.57 0 0" />
             <geometry>
-                <!-- <cylinder length="0.007" radius="0.03" /> -->
                 <mesh filename="package://robot_description/meshes/wheel_left_link.STL" />
             </geometry>
         </visual>
         <collision>
             <origin xyz="0 0 0" rpy="-1.57 0 0" />
             <geometry>
-                <!-- <sphere radius="0.033"/> -->
                 <cylinder length="0.007" radius="0.03" />
             </geometry>
         </collision>

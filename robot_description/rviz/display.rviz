@@ -57,16 +57,6 @@ Visualization Manager:
           Value: true
         base_link:
           Value: true
-        camera_link:
-          Value: true
-        caster_front_link:
-          Value: true
-        caster_rear_link:
-          Value: true
-        imu_link:
-          Value: true
-        laser_link:
-          Value: true
         wheel_left_link:
           Value: true
         wheel_right_link:
@@ -79,16 +69,6 @@ Visualization Manager:
       Tree:
         base_footprint:
           base_link:
-            camera_link:
-              {}
-            caster_front_link:
-              {}
-            caster_rear_link:
-              {}
-            imu_link:
-              {}
-            laser_link:
-              {}
             wheel_left_link:
               {}
             wheel_right_link:
@@ -118,31 +98,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
         base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        camera_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        caster_front_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        caster_rear_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        imu_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        laser_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false

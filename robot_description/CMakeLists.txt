@@ -23,14 +23,8 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-install(PROGRAMS
-  src/tf_control.py
-  DESTINATION lib/${PROJECT_NAME}
-)
-
 install(DIRECTORY
   # add directories here
-  src
   launch
   meshes
   urdf
