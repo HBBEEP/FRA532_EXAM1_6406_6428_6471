@@ -18,32 +18,44 @@ class robot_controller(Node):
 
         self.create_subscription(Int8, '/robot_command', self.robot_command_callback, 10)
 
-        self.prev_time = None
+        self.prev_time = self.get_clock().now()
+        self.prev_time_control = self.get_clock().now()
+
         self.robot_twist = [0.0, 0.0]
         self.robot_position = [0.0, 0.0, 0.0]
         self.odom_broadcaster = TransformBroadcaster(self)
         self.command = 0
         self.prev_command = None
+        self.run_flag = False
 
     def timer_callback(self):
-        if (self.prev_command != self.command):
-            self.prev_time = self.get_clock().now() 
+        if (self.run_flag):
+            self.run_flag = False
 
-            if (self.command == 0):
-                self.get_logger().info("==== IDLE STATE ====")
-            elif (self.command == 1):
-                self.get_logger().info("==== SQUARE ====")
-                self.rectangle_path()
-            elif (self.command == 2):
-                self.get_logger().info("==== CIRCLE ====")
-                self.circle_path()
+        if (self.command == 0):
+            self.get_logger().info("==== IDLE STATE ====")
+            self.publish_robot_twist(0.0, 0.0)
 
+        elif (self.command == 1):
+            self.get_logger().info("==== SQUARE ====")
+            self.rectangle_path()
+        elif (self.command == 2):
+            # self.get_logger().info("==== CIRCLE ====")
+            self.circle_path()
+        elif (self.command == 3):
+            # self.get_logger().info("==== CIRCLE ====")
+            self.linear_path()
         self.prev_command = self.command
 
             
     def robot_command_callback(self, msg):
         if (msg.data != self.command):
+            self.get_logger().info("==== RECIEVE COMMAND ====")
             self.command = msg.data
+            self.run_flag = True
+            self.prev_time_control = self.get_clock().now() 
+
+
 
     def publish_robot_twist(self, linear_vel, angular_vel):
         twist = Twist()
@@ -80,25 +92,57 @@ class robot_controller(Node):
         self.prev_time = self.get_clock().now() 
 
     def rectangle_path(self):
-        spent_time = (self.get_clock().now().nanoseconds - self.prev_time.nanoseconds)/S_TO_NS
+        spent_time = (self.get_clock().now().nanoseconds - self.prev_time_control.nanoseconds)/S_TO_NS
+        self.get_logger().info(f"== {spent_time}")
+        easy_gain = 10
+
         if (spent_time > 0 and spent_time < 10):
-            self.publish_robot_twist(0.0, -0.157)
+            
+            self.publish_robot_twist(0.0, -0.157 * easy_gain)
         elif (spent_time > 10 and spent_time < 20):
-            self.publish_robot_twist(0.2, 0.0)
+            self.publish_robot_twist(0.2 * easy_gain, 0.0)
+
         elif (spent_time > 20 and spent_time < 30):
-            self.publish_robot_twist(0.0, -0.157)
-        elif (spent_time > 30 and spent_time < 38):
-            self.publish_robot_twist(0.2, 0.0)
+            self.publish_robot_twist(0.0, -0.157 * easy_gain)
+
+        elif (spent_time > 30 and spent_time < 40):
+            self.publish_robot_twist(0.2 * easy_gain, 0.0)
+
+        elif (spent_time > 40 and spent_time < 50):
+            self.publish_robot_twist(0.0, -0.157 * easy_gain)
+
+        elif (spent_time > 50 and spent_time < 60):
+            self.publish_robot_twist(0.2 * easy_gain, 0.0)
+
+        elif (spent_time > 60 and spent_time < 70):
+            self.publish_robot_twist(0.0, -0.157 * easy_gain)
+
+        elif (spent_time > 70 and spent_time < 80):
+            self.publish_robot_twist(0.2 * easy_gain, 0.0)
+
+        elif (spent_time > 80 and spent_time < 90):
+            self.publish_robot_twist(0.0, -0.157 * easy_gain)
+
+        elif (spent_time > 90 and spent_time < 100):
+            self.publish_robot_twist(0.2 * easy_gain, 0.0)
+   
+
         else:
             self.publish_robot_twist(0.0, 0.0)
 
     def circle_path(self):
-        spent_time = (self.get_clock().now().nanoseconds - self.prev_time.nanoseconds)/S_TO_NS
-        if (spent_time > 0 and spent_time < 10):
+        spent_time = (self.get_clock().now().nanoseconds - self.prev_time_control.nanoseconds)/S_TO_NS
+        if (spent_time > 0 and spent_time < 100):
             self.publish_robot_twist(0.2, -0.1)
         else:
             self.publish_robot_twist(0.0, 0.0)
 
+    def linear_path(self):
+        spent_time = (self.get_clock().now().nanoseconds - self.prev_time_control.nanoseconds)/S_TO_NS
+        if (spent_time > 0 and spent_time < 100):
+            self.publish_robot_twist(1.0, 0.0)
+        else:
+            self.publish_robot_twist(0.0, 0.0)
 
 def main(args=None):
     rclpy.init(args=args)
