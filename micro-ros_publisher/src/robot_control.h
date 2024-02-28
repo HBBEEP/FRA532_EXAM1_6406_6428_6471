@@ -15,7 +15,7 @@ public:
     void end(void); 
     void motorBegin();
     void imuBegin();
-    void motorControl(int speedRight, int speedLeft);
+    void motorControl(float speedRight, float speedLeft);
 
     int *getWheelVel();
     int *getWheelPos();

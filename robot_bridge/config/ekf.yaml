@@ -89,11 +89,18 @@ ekf_filter_node:
 # do not provide some of the state variables estimated by the filter. For example, a TwistWithCovarianceStamped message
 # has no pose information, so the first six values would be meaningless in that case. Each vector defaults to all false
 # if unspecified, effectively making this parameter required for each sensor.
-        odom0_config: [true, true, true,
-                       false, false, false,
-                       true,  true,  true,
+
+        odom0_config: [true, true, false,
+                       false, false, true,
+                       true,  true,  false,
                        false, false, true,
                        false, false, false]
+
+        # odom0_config: [true, true, true,
+        #                false, false, false,
+        #                true,  true,  true,
+        #                false, false, true,
+        #                false, false, false]
 
         #        [x_pos   , y_pos    , z_pos,
         #         roll    , pitch    , yaw,
@@ -134,6 +141,13 @@ ekf_filter_node:
 # the thresholds.
         odom0_pose_rejection_threshold: 5.0
         odom0_twist_rejection_threshold: 1.0
+
+        # imu0: imu/data
+        # imu0_config: [false, false, false,
+        #               false,  false,  true,
+        #               false, false, false,
+        #               false,  false,  true,
+        #               true,  false,  false]
 
         imu0: imu/data
         imu0_config: [false, false, false,

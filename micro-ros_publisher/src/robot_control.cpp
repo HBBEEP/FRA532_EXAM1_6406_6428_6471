@@ -52,15 +52,25 @@ void ROBOT_CONTROL::getImuGyro(float * gyro_in)
     gyro_in[2] = mpu.getGyroZ();
 }
 
-void ROBOT_CONTROL::motorControl(int speedRight, int speedLeft)
+void ROBOT_CONTROL::motorControl(float speedRight, float speedLeft)
 {
-    // Determine direction of each motor
+    // static int rpmRight = (int)speedRight * RAD_TO_RPM;
+    // static int rpmLeft = (int)speedLeft * RAD_TO_RPM;
+
+    // // Determine direction of each motor
+    // bool dirMotorRight = rpmRight >= 0;
+    // bool dirMotorLeft = !(rpmLeft >= 0);
+
+    // // Control the motors
+    // Motor.turnWheel(MOTORLEFT, dirMotorLeft, abs(rpmLeft));
+    // Motor.turnWheel(MOTORRIGHT, dirMotorRight, abs(rpmRight));
+
     bool dirMotorRight = speedRight >= 0;
     bool dirMotorLeft = !(speedLeft >= 0);
 
     // Control the motors
-    Motor.turnWheel(MOTORLEFT, dirMotorLeft, abs(speedLeft));
-    Motor.turnWheel(MOTORRIGHT, dirMotorRight, abs(speedRight));
+    Motor.turnWheel(MOTORLEFT, dirMotorLeft, abs(speedLeft *  9.5493));
+    Motor.turnWheel(MOTORRIGHT, dirMotorRight, abs(speedRight *  9.5493));
 
 }
 

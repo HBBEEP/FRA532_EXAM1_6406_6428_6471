@@ -29,30 +29,34 @@ class robot_controller(Node):
         self.run_flag = False
 
     def timer_callback(self):
-        if (self.run_flag):
-            self.run_flag = False
+
 
         if (self.command == 0):
             self.get_logger().info("==== IDLE STATE ====")
             self.publish_robot_twist(0.0, 0.0)
 
-        elif (self.command == 1):
+        if (self.command == 1):
             self.get_logger().info("==== SQUARE ====")
             self.rectangle_path()
-        elif (self.command == 2):
+        if (self.command == 2):
             # self.get_logger().info("==== CIRCLE ====")
             self.circle_path()
-        elif (self.command == 3):
+        if (self.command == 3):
             # self.get_logger().info("==== CIRCLE ====")
             self.linear_path()
+        
+        if (self.command == 4):
+            self.circle_around_path()
+
+        self.calculate_wheel_odometry()
         self.prev_command = self.command
+
 
             
     def robot_command_callback(self, msg):
         if (msg.data != self.command):
             self.get_logger().info("==== RECIEVE COMMAND ====")
             self.command = msg.data
-            self.run_flag = True
             self.prev_time_control = self.get_clock().now() 
 
 
@@ -63,19 +67,25 @@ class robot_controller(Node):
         twist.angular.z = angular_vel
         self.robot_twist = [linear_vel, angular_vel]
         self.robot_twist_publisher.publish(twist)
-        self.calculate_wheel_odometry()
 
     def calculate_wheel_odometry(self):
         dt = self.get_clock().now() - self.prev_time
-        dx = self.robot_twist[0] * math.cos(self.robot_position[2] ) * (dt.nanoseconds / S_TO_NS)
-        dy = self.robot_twist[0] * math.sin(self.robot_position[2] ) * (dt.nanoseconds / S_TO_NS)
-        dtheta = self.robot_twist[1] * (dt.nanoseconds / S_TO_NS)
+
+        self.get_logger().info(f"---{dt.nanoseconds / S_TO_NS}")
+
+    
+        dx = self.robot_twist[0] * math.cos(self.robot_position[2] ) * 0.1 #(dt.nanoseconds / S_TO_NS)
+        dy = self.robot_twist[0] * math.sin(self.robot_position[2] ) * 0.1 #(dt.nanoseconds / S_TO_NS)
+        dtheta = self.robot_twist[1] * 0.1  #(dt.nanoseconds / S_TO_NS)
+
+        self.get_logger().info(f"-dx--{dx}")
 
         self.robot_position[0] += dx
         self.robot_position[1] += dy
         self.robot_position[2] += dtheta
         self.robot_position[2] = math.atan2(math.sin(self.robot_position[2]), math.cos(self.robot_position[2]))
-        
+        self.get_logger().info(f"X : {self.robot_position[0]} | Y : {self.robot_position[1]} | Z : {self.robot_position[2]}")
+
         t = TransformStamped()
         t.header.stamp = self.get_clock().now().to_msg()
         t.header.frame_id = 'odom'
@@ -89,43 +99,40 @@ class robot_controller(Node):
         t.transform.rotation.z = q[2]
         t.transform.rotation.w = q[3]
         self.odom_broadcaster.sendTransform(t)
+        
         self.prev_time = self.get_clock().now() 
 
     def rectangle_path(self):
         spent_time = (self.get_clock().now().nanoseconds - self.prev_time_control.nanoseconds)/S_TO_NS
-        self.get_logger().info(f"== {spent_time}")
-        easy_gain = 10
+        easy_gain = 1
 
         if (spent_time > 0 and spent_time < 10):
             
             self.publish_robot_twist(0.0, -0.157 * easy_gain)
         elif (spent_time > 10 and spent_time < 20):
-            self.publish_robot_twist(0.2 * easy_gain, 0.0)
+            self.publish_robot_twist(0.1 * easy_gain, 0.0)
 
         elif (spent_time > 20 and spent_time < 30):
             self.publish_robot_twist(0.0, -0.157 * easy_gain)
 
         elif (spent_time > 30 and spent_time < 40):
-            self.publish_robot_twist(0.2 * easy_gain, 0.0)
+            self.publish_robot_twist(0.1 * easy_gain, 0.0)
 
         elif (spent_time > 40 and spent_time < 50):
             self.publish_robot_twist(0.0, -0.157 * easy_gain)
 
         elif (spent_time > 50 and spent_time < 60):
-            self.publish_robot_twist(0.2 * easy_gain, 0.0)
+            self.publish_robot_twist(0.1 * easy_gain, 0.0)
 
         elif (spent_time > 60 and spent_time < 70):
             self.publish_robot_twist(0.0, -0.157 * easy_gain)
 
         elif (spent_time > 70 and spent_time < 80):
-            self.publish_robot_twist(0.2 * easy_gain, 0.0)
+            self.publish_robot_twist(0.1 * easy_gain, 0.0)
 
         elif (spent_time > 80 and spent_time < 90):
             self.publish_robot_twist(0.0, -0.157 * easy_gain)
 
-        elif (spent_time > 90 and spent_time < 100):
-            self.publish_robot_twist(0.2 * easy_gain, 0.0)
-   
 
         else:
             self.publish_robot_twist(0.0, 0.0)
@@ -139,8 +146,15 @@ class robot_controller(Node):
 
     def linear_path(self):
         spent_time = (self.get_clock().now().nanoseconds - self.prev_time_control.nanoseconds)/S_TO_NS
-        if (spent_time > 0 and spent_time < 100):
+        if (spent_time > 0 and spent_time < 10):
             self.publish_robot_twist(1.0, 0.0)
+        else:
+            self.publish_robot_twist(0.0, 0.0)
+
+    def circle_around_path(self):
+        spent_time = (self.get_clock().now().nanoseconds - self.prev_time_control.nanoseconds)/S_TO_NS
+        if (spent_time > 0 and spent_time < 1000):
+            self.publish_robot_twist(0.0, 0.8)
         else:
             self.publish_robot_twist(0.0, 0.0)
 
