@@ -29,6 +29,8 @@ class robot_controller(Node):
         self.prev_command = None
         self.run_flag = False
         self.log_wheel = []
+        self.WHEEL_RADIUS = 0.03375
+        self.WHEEL_SEPARATION = 0.16480
     def timer_callback(self):
 
 
