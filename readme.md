@@ -166,6 +166,16 @@ void ROBOT_CONTROL::readWheelVelocity(float* wheelVel){
 ## 4. Experimenting to adjust the covariance values of wheel odometry and IMU in the Extended Kalman Filter (EKF)
 
 ## 5. Experimenting with movement according to scenarios 1 and 2
+
+The purpose is to observe the movement trajectory of the actual robot compared to the odom frame of the robot obtained from wheel odometry calculations in the RVIZ program
+
+Hypothesis: The movement trajectories may not align due to various factors such as friction forces that cannot be accurately calculated in the program, wheel slip, and other external factors
+
+Two sets of command will be created
+
+Set 1: Movement in a 1*1 meter square
+
+
 ### 5.1 regtangle path (via points)
 https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/75566343/bb18568b-762e-4abd-98b4-9f5bb295e32b
 
