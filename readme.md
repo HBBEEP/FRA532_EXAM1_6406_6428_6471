@@ -159,6 +159,14 @@ void ROBOT_CONTROL::readWheelVelocity(float* wheelVel){
 }
 ```
 
+
+![image](https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/104858772/71647c48-4788-4408-bb51-446302d13f94)
+
+
+![image](https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/104858772/96c7d5ca-a26d-467a-a48e-80ab576f8027)
+
+The motion control was tested using a twist message, computed from the inverse kinematics, yielding a wheel velocity of approximately 2.96 rad/s. Upon observation, it was found that the measured values closely matched the expected ones. Initially, there was a gradual increase in acceleration, followed by a period where the velocity stabilized. Various errors may have occurred during the experiment, stemming from multiple factors such as wheel distance prediction inaccuracies, wheel radius estimation in inverse kinematics, frictional forces, or discrepancies in distance measurement.
+
 ## 2. Experimenting to find the relationship between robot's real values and wheel odometry values
 
 ## 3. Experimenting to find the relationship between the command (cmd_vel) and the movement of the robot
