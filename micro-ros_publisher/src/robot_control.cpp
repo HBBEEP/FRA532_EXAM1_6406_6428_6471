@@ -39,17 +39,17 @@ void ROBOT_CONTROL::imuBegin()
 void ROBOT_CONTROL::getImuAcc(float * acc_in)
 {
     mpu.update();
-    acc_in[0] = mpu.getAccX();
-    acc_in[1] = mpu.getAccY();
-    acc_in[2] = mpu.getAccZ();
+    acc_in[0] = mpu.getAccX() * GRAVITY;
+    acc_in[1] = mpu.getAccY() * GRAVITY;
+    acc_in[2] = mpu.getAccZ() * GRAVITY;
 }
 
 void ROBOT_CONTROL::getImuGyro(float * gyro_in)
 {
     mpu.update();
-    gyro_in[0] = mpu.getGyroX();
-    gyro_in[1] = mpu.getGyroY();
-    gyro_in[2] = mpu.getGyroZ();
+    gyro_in[0] = mpu.getGyroX() * DEG_TO_RAD;
+    gyro_in[1] = mpu.getGyroY() * DEG_TO_RAD;
+    gyro_in[2] = mpu.getGyroZ() * DEG_TO_RAD;
 }
 
 void ROBOT_CONTROL::motorControl(float speedRight, float speedLeft)

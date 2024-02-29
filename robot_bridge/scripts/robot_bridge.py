@@ -12,7 +12,10 @@ from geometry_msgs.msg import TransformStamped
 from rclpy.constants import S_TO_NS
 from sensor_msgs.msg import Imu
 import tf_transformations
-from tf2_ros import TransformBroadcaster
+from tf2_ros import TransformBroadcaster,LookupException, ConnectivityException, ExtrapolationException
+
+import tf2_ros
+
 
 class robot_bridge(Node):
     def __init__(self):
@@ -46,6 +49,12 @@ class robot_bridge(Node):
         self.load_yaml_file()
         self.prev_time = self.get_clock().now()
 
+         # > TF -
+        self.tf_buffer = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
+        self.publish_transform = TransformBroadcaster(self)
+        # < TF - 
+
     def timer_callback(self):
         self.imu_data_pub()
 
@@ -72,7 +81,7 @@ class robot_bridge(Node):
         odom = Odometry()
         odom.header.stamp = self.get_clock().now().to_msg()
         odom.header.frame_id = "odom"
-        odom.child_frame_id = "base_footprint"
+        odom.child_frame_id = "base_link"
 
         # set the position
         odom.pose.pose.position.x = self.robot_position[0] 
@@ -85,6 +94,8 @@ class robot_bridge(Node):
         odom.pose.pose.orientation.z = q[2]
         odom.pose.pose.orientation.w = q[3]
 
+        self.pub_transform(odom.pose.pose.position.x,odom.pose.pose.position.y,odom.pose.pose.position.z,q[0],q[1],q[2],q[3])
+
         # set the velocity
         odom.twist.twist.linear.x = self.robot_twist[0]
         odom.twist.twist.linear.y = 0.0
@@ -94,23 +105,39 @@ class robot_bridge(Node):
         odom.twist.twist.angular.y = 0.0
         odom.twist.twist.angular.z = self.robot_twist[1]
 
-        odom.pose.covariance = [ 0.01, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                 0.0, 0.01, 0.0, 0.0, 0.0, 0.0,
-                                 0.0, 0.0, 0.01, 0.0, 0.0, 0.0,
-                                 0.0, 0.0, 0.0, 0.01, 0.0, 0.0,
-                                 0.0, 0.0, 0.0, 0.0, 0.01, 0.0,
-                                 0.0, 0.0, 0.0, 0.0, 0.0, 0.01]
-        odom.twist.covariance = [ 0.01, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                 0.0, 0.01, 0.0, 0.0, 0.0, 0.0,
-                                 0.0, 0.0, 0.01, 0.0, 0.0, 0.0,
-                                 0.0, 0.0, 0.0, 0.01, 0.0, 0.0,
-                                 0.0, 0.0, 0.0, 0.0, 0.01, 0.0,
-                                 0.0, 0.0, 0.0, 0.0, 0.0, 0.01]
+        odom.pose.covariance = [ 1.e-6, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                 0.0, 1.e-6, 0.0, 0.0, 0.0, 0.0,
+                                 0.0, 0.0, 1.e-6, 0.0, 0.0, 0.0,
+                                 0.0, 0.0, 0.0, 1.e-6, 0.0, 0.0,
+                                 0.0, 0.0, 0.0, 0.0, 1.e-6, 0.0,
+                                 0.0, 0.0, 0.0, 0.0, 0.0, 1.e-6]
+        odom.twist.covariance = [ 1.e-6, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                 0.0, 1.e-6, 0.0, 0.0, 0.0, 0.0,
+                                 0.0, 0.0, 1.e-6, 0.0, 0.0, 0.0,
+                                 0.0, 0.0, 0.0, 1.e-6, 0.0, 0.0,
+                                 0.0, 0.0, 0.0, 0.0, 1.e-6, 0.0,
+                                 0.0, 0.0, 0.0, 0.0, 0.0, 1.e-6]
         
         # measure covariance  น้อย e-9 เยอะ 100 
         self.prev_time = self.get_clock().now()
 
         self.odom_publisher.publish(odom)
+
+    def pub_transform(self,x,y,z,rx,ry,rz,rw):
+        t = TransformStamped()
+
+        t.header.stamp = self.get_clock().now().to_msg()
+        t.header.frame_id = "odom"
+        t.child_frame_id = "wheel_odom"
+
+        t.transform.translation.x = x
+        t.transform.translation.y = y
+
+        t.transform.rotation.x = rx
+        t.transform.rotation.y = ry
+        t.transform.rotation.z = rz
+        t.transform.rotation.w = rw
+        self.publish_transform.sendTransform(t)
 
     def forward_kinematics(self, rwheel_velocity, lwheel_velocity):
         fk_constant = self.WHEEL_RADIUS * np.array([[0.5,0.5],
@@ -121,12 +148,17 @@ class robot_bridge(Node):
         robot_twist[1] = 0 if abs(robot_twist[1]) < 0.0001 else robot_twist[1] 
         return robot_twist
     
-
     def imu_data_pub(self):
         imu_msg = Imu()
-        imu_msg.linear_acceleration.x = float(self.imu_raw[0]) - self.lx_offset
-        imu_msg.linear_acceleration.y = float(self.imu_raw[1]) - self.ly_offset
-        imu_msg.linear_acceleration.z = float(self.imu_raw[2]) - self.lz_offset
+        imu_msg.header.frame_id = "base_footprint"
+
+        # imu_msg.header.frame_id = "odom"
+        # imu_msg.child_frame_id = "base_footprint"
+
+        imu_msg.header.stamp = self.get_clock().now().to_msg()
+        imu_msg.linear_acceleration.x = float(self.imu_raw[0]) # - self.lx_offset
+        imu_msg.linear_acceleration.y = float(self.imu_raw[1]) # - self.ly_offset
+        imu_msg.linear_acceleration.z = float(self.imu_raw[2]) # - self.lz_offset
         imu_msg.linear_acceleration_covariance = self.acc_cov
 
         # Gyroscope data in rad/s

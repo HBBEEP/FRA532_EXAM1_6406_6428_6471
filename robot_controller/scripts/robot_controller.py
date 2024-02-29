@@ -13,7 +13,7 @@ from tf2_ros import TransformBroadcaster
 class robot_controller(Node):
     def __init__(self):
         super().__init__('robot_controller')
-        self.robot_timer = self.create_timer(0.1, self.timer_callback)
+        self.robot_timer = self.create_timer(0.01, self.timer_callback)
         self.robot_twist_publisher = self.create_publisher(Twist, '/cmd_vel', 10)
 
         self.create_subscription(Int8, '/robot_command', self.robot_command_callback, 10)
@@ -60,7 +60,6 @@ class robot_controller(Node):
             self.prev_time_control = self.get_clock().now() 
 
 
-
     def publish_robot_twist(self, linear_vel, angular_vel):
         twist = Twist()
         twist.linear.x = linear_vel
@@ -71,14 +70,9 @@ class robot_controller(Node):
     def calculate_wheel_odometry(self):
         dt = self.get_clock().now() - self.prev_time
 
-        self.get_logger().info(f"---{dt.nanoseconds / S_TO_NS}")
-
-    
-        dx = self.robot_twist[0] * math.cos(self.robot_position[2] ) * 0.1 #(dt.nanoseconds / S_TO_NS)
-        dy = self.robot_twist[0] * math.sin(self.robot_position[2] ) * 0.1 #(dt.nanoseconds / S_TO_NS)
-        dtheta = self.robot_twist[1] * 0.1  #(dt.nanoseconds / S_TO_NS)
-
-        self.get_logger().info(f"-dx--{dx}")
+        dx = self.robot_twist[0] * math.cos(self.robot_position[2] ) * 0.01 #(dt.nanoseconds / S_TO_NS)
+        dy = self.robot_twist[0] * math.sin(self.robot_position[2] ) * 0.01 #(dt.nanoseconds / S_TO_NS)
+        dtheta = self.robot_twist[1] * 0.01 #(dt.nanoseconds / S_TO_NS)
 
         self.robot_position[0] += dx
         self.robot_position[1] += dy
@@ -104,34 +98,55 @@ class robot_controller(Node):
 
     def rectangle_path(self):
         spent_time = (self.get_clock().now().nanoseconds - self.prev_time_control.nanoseconds)/S_TO_NS
-        easy_gain = 1
+        easy_gain = 2.0
 
-        if (spent_time > 0 and spent_time < 10):
-            
+        if (spent_time > 0 and spent_time < 5):
             self.publish_robot_twist(0.0, -0.157 * easy_gain)
-        elif (spent_time > 10 and spent_time < 20):
+        elif (spent_time >= 5 and spent_time < 5.5): ## STOP 
+            pass
+        elif (spent_time >= 5.5 and spent_time < 7): ## STOP
+            self.publish_robot_twist(0.0, 0.0)
+        elif (spent_time >= 7 and spent_time < 12):
             self.publish_robot_twist(0.1 * easy_gain, 0.0)
 
-        elif (spent_time > 20 and spent_time < 30):
+        elif (spent_time >= 12 and spent_time < 12.5): ## STOP 
+            pass
+
+        elif (spent_time > 12.5 and spent_time < 14): ## STOP
+            self.publish_robot_twist(0.0, 0.0)
+
+        elif (spent_time > 14 and spent_time < 19):
             self.publish_robot_twist(0.0, -0.157 * easy_gain)
 
-        elif (spent_time > 30 and spent_time < 40):
+        elif (spent_time >= 19 and spent_time < 19.5): ## STOP 
+            pass
+
+        elif (spent_time > 19 and spent_time < 21): ## STOP
+            self.publish_robot_twist(0.0, 0.0) 
+
+        elif (spent_time > 21 and spent_time < 26):
             self.publish_robot_twist(0.1 * easy_gain, 0.0)
 
-        elif (spent_time > 40 and spent_time < 50):
-            self.publish_robot_twist(0.0, -0.157 * easy_gain)
+        elif (spent_time >= 26 and spent_time < 26.5): ## STOP 
+            pass
 
-        elif (spent_time > 50 and spent_time < 60):
-            self.publish_robot_twist(0.1 * easy_gain, 0.0)
+        elif (spent_time > 26 and spent_time < 28): ## STOP
+            self.publish_robot_twist(0.0, 0.0)
 
-        elif (spent_time > 60 and spent_time < 70):
-            self.publish_robot_twist(0.0, -0.157 * easy_gain)
+        # elif (spent_time > 20 and spent_time < 25):
+        #     self.publish_robot_twist(0.0, -0.157 * easy_gain)
 
-        elif (spent_time > 70 and spent_time < 80):
-            self.publish_robot_twist(0.1 * easy_gain, 0.0)
+        # elif (spent_time > 25 and spent_time < 30):
+        #     self.publish_robot_twist(0.1 * easy_gain, 0.0)
 
-        elif (spent_time > 80 and spent_time < 90):
-            self.publish_robot_twist(0.0, -0.157 * easy_gain)
+        # elif (spent_time > 30 and spent_time < 35):
+        #     self.publish_robot_twist(0.0, -0.157 * easy_gain)
+
+        # elif (spent_time > 35 and spent_time < 40):
+        #     self.publish_robot_twist(0.1 * easy_gain, 0.0)
+
+        # elif (spent_time > 40 and spent_time < 45):
+        #     self.publish_robot_twist(0.0, -0.157 * easy_gain)
 
 
         else:
@@ -154,7 +169,7 @@ class robot_controller(Node):
     def circle_around_path(self):
         spent_time = (self.get_clock().now().nanoseconds - self.prev_time_control.nanoseconds)/S_TO_NS
         if (spent_time > 0 and spent_time < 1000):
-            self.publish_robot_twist(0.0, 0.8)
+            self.publish_robot_twist(0.5, 0.5)
         else:
             self.publish_robot_twist(0.0, 0.0)
 

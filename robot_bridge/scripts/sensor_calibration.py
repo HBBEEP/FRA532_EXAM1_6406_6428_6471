@@ -13,7 +13,7 @@ class sensor_calibration(Node):
     def __init__(self):
         super().__init__('sensor_calibration')
         self.create_subscription(Float32MultiArray, '/imu_raw', self.imu_callback, 10)
-        self.iteration = 10
+        self.iteration = 1000
         self.reset()
 
     def reset(self):
@@ -51,7 +51,7 @@ class sensor_calibration(Node):
             self.calculate_calibration()
             self.save_yaml_file(self.data)
             # self.reset()
-        # self.get_logger().info(f"-------{self.count}")
+        self.get_logger().info(f"-------{self.count}")
         self.use_linear = True
         self.arr_angular_x.append(msg.data[3])
         self.arr_angular_y.append(msg.data[4])
