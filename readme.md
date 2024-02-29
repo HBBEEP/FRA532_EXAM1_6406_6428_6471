@@ -13,7 +13,7 @@ This Exam is part of the FRA532 Mobile Robot course for third-year students at t
 
 ## Diagram
 
-![FRA532 Exam1](https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/122891621/5fb7cdd2-7042-4174-832a-50b4ca5c97ee)
+![FRA532 Exam1 drawio](https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/122891621/9b735f94-de3c-45a7-a07b-dd02f157af9f)
 
 ## rqt_graph
 
@@ -40,6 +40,20 @@ source install/setup.bash
 ```
 ## Usage
 
+### Serial Mode
+```
+ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyUSB0 -b 115200
+```
+```
+board_microros_transport = serial
+```
+### Wifi Mode
+```
+ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888
+```
+```
+board_microros_transport = wifi
+```
 
 ## Experiment
 
