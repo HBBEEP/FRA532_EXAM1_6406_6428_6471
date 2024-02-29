@@ -40,7 +40,7 @@ source install/setup.bash
 ```
 ## Usage
 
-### Terminal 1: Run ESP32
+### Terminal 1: Run ESPino32
 
 #### Serial Mode
 ```
