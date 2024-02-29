@@ -163,6 +163,6 @@ void setup() {
 }
 
 void loop() {
-  delay(10);
-  RCSOFTCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(10)));
+  delay(1);
+  RCSOFTCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(1)));
 }
