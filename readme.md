@@ -92,6 +92,9 @@ data: 4 = linear_path
 
 ```
 ros2 topic pub /robot_command std_msgs/msg/Int8 'data: 1'
+ros2 topic pub /robot_command std_msgs/msg/Int8 'data: 2'
+ros2 topic pub /robot_command std_msgs/msg/Int8 'data: 3'
+ros2 topic pub /robot_command std_msgs/msg/Int8 'data: 4'
 ```
 
 ## Experiment
