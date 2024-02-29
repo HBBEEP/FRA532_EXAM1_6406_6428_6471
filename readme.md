@@ -158,7 +158,7 @@ void ROBOT_CONTROL::readWheelVelocity(float* wheelVel){
     wheelVel[1] = ((wheelVel[1] * 0.916) * 2 * PI) / 60;
 }
 ```
-
+Experiment to compared values between the actual wheel velocity and the wheel command
 
 ![image](https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/104858772/71647c48-4788-4408-bb51-446302d13f94)
 
