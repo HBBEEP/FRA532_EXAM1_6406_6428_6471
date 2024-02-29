@@ -5,6 +5,7 @@ This Exam is part of the FRA532 Mobile Robot course for third-year students at t
 ## Table of Contents
 
 - [Diagram](#Diagram)
+- [rqt_graph](#rqt_graph)
 - [Installation](#Installation)
 - [Usage](#Usage)
 - [Experiment](#Experiment)
@@ -14,6 +15,29 @@ This Exam is part of the FRA532 Mobile Robot course for third-year students at t
 
 ![FRA532 Exam1](https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/122891621/5fb7cdd2-7042-4174-832a-50b4ca5c97ee)
 
+## rqt_graph
+
+![image](https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/122891621/5b69a3b2-95d8-4d0a-a0ce-278ab65adf61)
+
+## Installation
+
+Step 1: Clone the repository to the src directory of your workspace.
+```
+cd ~/[your_workspace]/src
+git clone https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471.git
+```
+Step 2: Run rosdep install to install dependencies
+```
+rosdep update
+rosdep install --from-paths src -y --ignore-src
+```
+
+Step 3: Build a package in your workspace.
+```
+cd ~/[your_workspace]
+colcon build 
+source install/setup.bash
+```
 ## Usage
 
 
@@ -25,7 +49,7 @@ from MX-12W datasheet [https://emanual.robotis.com/docs/en/dxl/mx/mx-12w/?fbclid
 
 ![image](https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/122891621/b3046c6d-d512-4cfa-ab8d-4f6d01149191)
 
-### 2. Experimenting to find the relationship between robot's real value and wheel odometry values
+### 2. Experimenting to find the relationship between robot's real values and wheel odometry values
 
 ### 3. Experimenting to find the relationship between the command (cmd_vel) and the movement of the robot
 
