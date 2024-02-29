@@ -69,10 +69,10 @@ Receiving various data from the robot for use in robot_localization (EKF)
 ```
 ros2 run robot_bridge robot_bridge.py
 ```
-### Terminal 3: Launch robot_bridge.launch.py 
+### Terminal 3: Launch test.launch.py 
 Use package robot_localization
 ```
-ros2 launch robot_bridge robot_bridge.launch.py
+ros2 launch robot_bridge test.launch.py
 ```
 ### Terminal 4: run robot_controller.py 
 Send twist command to the robot
@@ -168,6 +168,7 @@ void ROBOT_CONTROL::readWheelVelocity(float* wheelVel){
 ## 5. Experimenting with movement according to scenarios 1 and 2
 ### 5.1 regtangle path (via points)
 https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/75566343/bb18568b-762e-4abd-98b4-9f5bb295e32b
+
 ### 5.2 circle path
 https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/75566343/17a5f61e-d245-4abe-b685-1a071f6ed9c0
 
