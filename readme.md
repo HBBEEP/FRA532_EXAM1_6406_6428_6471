@@ -64,23 +64,28 @@ ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888
 ```
 board_microros_transport = wifi
 ```
-### Terminal 2: Run robot_bridge.py (Receiving various data from the robot for use in robot_localization (EKF))
+### Terminal 2: Run robot_bridge.py 
+Receiving various data from the robot for use in robot_localization (EKF)
 ```
 ros2 run robot_bridge robot_bridge.py
 ```
-### Terminal 3: Launch robot_bridge.launch.py (Use package robot_localization)
+### Terminal 3: Launch robot_bridge.launch.py 
+Use package robot_localization
 ```
 ros2 launch robot_bridge robot_bridge.launch.py
 ```
-### Terminal 4: run robot_controller.py (Send twist command to the robot)
+### Terminal 4: run robot_controller.py 
+Send twist command to the robot
 ```
 ros2 run robot_controller robot_controller.py
 ```
-### Terminal 5: launch robot_description.py (Open urdf model in RVIZ)
+### Terminal 5: launch robot_description.py 
+Visualize model in RVIZ
 ```
 ros2 launch robot_description display.launch.py
 ```
-### Terminal 6: Select a command to publish data in robot_controller
+### Terminal 6: 
+Select a command to publish data in robot_controller
 
 data: 1 = IDLE State (Not Move)
 
