@@ -162,10 +162,10 @@ void ROBOT_CONTROL::readWheelVelocity(float* wheelVel){
 ## 2. Experimenting to find the relationship between robot's real values and wheel odometry values
 
 ## 3. Experimenting to find the relationship between the command (cmd_vel) and the movement of the robot
+![image](https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/75566343/6ed192da-8e41-416a-845b-a4804da9652f)
 
-## 4. Experimenting to adjust the covariance values of wheel odometry and IMU in the Extended Kalman Filter (EKF)
 
-## 5. Experimenting with movement according to scenarios 1 and 2
+## 4. Experimenting with movement according to scenarios 1 and 2
 
 The purpose is to observe the movement trajectory of the actual robot compared to the odom frame of the robot obtained from wheel odometry calculations in the RVIZ program
 
@@ -176,10 +176,10 @@ Two sets of command will be created
 Set 1: Movement in a 1*1 meter square
 
 
-### 5.1 regtangle path (via points)
+### 4.1 regtangle path (via points)
 https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/75566343/bb18568b-762e-4abd-98b4-9f5bb295e32b
 
-### 5.2 circle path
+### 4.2 circle path
 https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/75566343/17a5f61e-d245-4abe-b685-1a071f6ed9c0
 
 
