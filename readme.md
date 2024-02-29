@@ -63,6 +63,45 @@ from MX-12W datasheet [https://emanual.robotis.com/docs/en/dxl/mx/mx-12w/?fbclid
 
 ![image](https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/122891621/b3046c6d-d512-4cfa-ab8d-4f6d01149191)
 
+Motor Control
+```
+void ROBOT_CONTROL::motorControl(float speedRight, float speedLeft)
+{
+    // Determine direction of each motor
+    bool dirMotorRight = speedRight >= 0; // Right: True Forward CW
+    bool dirMotorLeft = !(speedLeft >= 0); // Left: False Forward CCW
+
+    // Control the motors
+    Motor.turnWheel(MOTORLEFT, dirMotorLeft, abs(speedLeft *  9.5493));
+    Motor.turnWheel(MOTORRIGHT, dirMotorRight, abs(speedRight *  9.5493));
+}
+```
+Dynamixel
+Read wheel velocity
+```
+void ROBOT_CONTROL::readWheelVelocity(float* wheelVel){ // pointer
+    wheelVel[0] = Motor.readSpeed(MOTORRIGHT); // Right
+    wheelVel[1] = Motor.readSpeed(MOTORLEFT); // Left
+
+    if(wheelVel[0] > 1023){ // Right: Forward CW
+        wheelVel[0] = wheelVel[0] - 1024;
+    }
+    else if(wheelVel[0] <= 1023){ // Right: Backward CCW
+        wheelVel[0] = - wheelVel[0];
+    }
+    if(wheelVel[1] > 1023){ // Left: Backward CW
+        wheelVel[1] = - (wheelVel[1] - 1024);
+    }
+    else if(wheelVel[1] <= 1023){ // Left: Forward CCW
+        wheelVel[1] = wheelVel[1];
+    }
+
+    // rad/s
+    wheelVel[0] = ((wheelVel[0] * 0.916) * 2 * PI) / 60; 
+    wheelVel[1] = ((wheelVel[1] * 0.916) * 2 * PI) / 60;
+}
+```
+
 ### 2. Experimenting to find the relationship between robot's real values and wheel odometry values
 
 ### 3. Experimenting to find the relationship between the command (cmd_vel) and the movement of the robot
