@@ -112,7 +112,7 @@ from MX-12W datasheet [https://emanual.robotis.com/docs/en/dxl/mx/mx-12w/?fbclid
 
 **Motor Control**
 
-
+In motor command, when the right motor moves forward, it rotates clockwise (CW), and the speed value is positive. When the left motor moves forward, it rotates counterclockwise (CCW), and the speed value is negative. These values can be used as booleans to command the motors. The motors require units in rpm, so commands must be converted from radians per second (rad/s) by multiplying by 60 / (2*pi), or approximately 9.5493.
 
 ```
 void ROBOT_CONTROL::motorControl(float speedRight, float speedLeft)
