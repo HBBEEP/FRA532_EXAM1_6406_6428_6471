@@ -46,11 +46,11 @@ source install/setup.bash
 ```
 ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyUSB0 -b 115200
 ```
-Change board_microros_transport in platformio.ini
+- Change board_microros_transport in platformio.ini
 ```
 board_microros_transport = serial
 ```
-Add this code in Main.cpp
+- Add this code in Main.cpp
 ```
 #if !defined(MICRO_ROS_TRANSPORT_ARDUINO_SERIAL)
 #error This example is only avaliable for Arduino framework with serial transport.
@@ -60,7 +60,7 @@ Add this code in Main.cpp
 ```
 ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888
 ```
-Change board_microros_transport in platformio.ini
+- Change board_microros_transport in platformio.ini
 ```
 board_microros_transport = wifi
 ```
@@ -81,9 +81,13 @@ ros2 run robot_controller robot_controller.py
 ros2 launch robot_description display.launch.py
 ```
 ### Terminal 6: Select a command to publish data in robot_controller
+
 data: 1 = IDLE State (Not Move)
+
 data: 2 = regtangle_path (via points)
+
 data: 3 = circle_path
+
 data: 4 = linear_path
 
 ```
