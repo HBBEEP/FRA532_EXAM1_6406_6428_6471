@@ -104,13 +104,16 @@ ros2 topic pub /robot_command std_msgs/msg/Int8 'data: 4'
 
 ## Experiment
 
-### 1. Experimenting to find relationships in Dynamixel motor control commands 
+## 1. Experimenting to find relationships in Dynamixel motor control commands 
 
 from MX-12W datasheet [https://emanual.robotis.com/docs/en/dxl/mx/mx-12w/?fbclid=IwAR2HMHfyoMVUpXsdOFKQmWoarIelAV0Ea9ONx6sfsGAt6oXsIt6a5hGgFXE] 
 
 ![image](https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/122891621/b3046c6d-d512-4cfa-ab8d-4f6d01149191)
 
-Motor Control
+**Motor Control**
+
+
+
 ```
 void ROBOT_CONTROL::motorControl(float speedRight, float speedLeft)
 {
@@ -124,9 +127,16 @@ void ROBOT_CONTROL::motorControl(float speedRight, float speedLeft)
 }
 ```
 
-Read wheel velocity
+**Read wheel velocity**
+
+When reading motor values from the Dynamixel MX-12W datasheet, it is found that they can be used in the range of 0 to 2047 (0X7FF) with a unit of 0.916 rpm.
+
+Bits 0-1023 represent counter-clockwise motor operation, while bits 1024-2048 represent clockwise motor operation.
+
+If the left motor moves forward, it rotates counterclockwise (CCW), and if the right motor moves forward, it rotates clockwise (CW). Therefore, when the value exceeds 1024, it needs to be subtracted by 1024 and then multiplied by 0.916 to convert to rpm. After that, the rpm value is converted to radians per second (rad/s) by multiplying it by 2*pi / 60.
+
 ```
-void ROBOT_CONTROL::readWheelVelocity(float* wheelVel){ // pointer
+void ROBOT_CONTROL::readWheelVelocity(float* wheelVel){ 
     wheelVel[0] = Motor.readSpeed(MOTORRIGHT); // Right
     wheelVel[1] = Motor.readSpeed(MOTORLEFT); // Left
 
@@ -148,24 +158,17 @@ void ROBOT_CONTROL::readWheelVelocity(float* wheelVel){ // pointer
     wheelVel[1] = ((wheelVel[1] * 0.916) * 2 * PI) / 60;
 }
 ```
-When reading motor values from the Dynamixel MX-12W datasheet, it is found that they can be used in the range of 0 to 2047 (0X7FF) with a unit of 0.916 rpm.
 
-Bits 0-1023 represent counter-clockwise motor operation, while bits 1024-2048 represent clockwise motor operation.
+## 2. Experimenting to find the relationship between robot's real values and wheel odometry values
 
-If the left motor moves forward, it rotates counterclockwise (CCW), and if the right motor moves forward, it rotates clockwise (CW). Therefore, when the value exceeds 1024, it needs to be subtracted by 1024 and then multiplied by 0.916 to convert to rpm. After that, the rpm value is converted to radians per second (rad/s) by multiplying it by 2*pi / 60.
+## 3. Experimenting to find the relationship between the command (cmd_vel) and the movement of the robot
 
+## 4. Experimenting to adjust the covariance values of wheel odometry and IMU in the Extended Kalman Filter (EKF)
 
-### 2. Experimenting to find the relationship between robot's real values and wheel odometry values
+## 5. Experimenting with movement according to scenarios 1 and 2
+### 5.1 regtangle path (via points)
+### 5.2 circle path
 
-### 3. Experimenting to find the relationship between the command (cmd_vel) and the movement of the robot
-
-### 4. Experimenting to adjust the covariance values of wheel odometry and IMU in the Extended Kalman Filter (EKF)
-
-### 5. Experimenting with movement according to scenarios 1 and 2
-#### 5.1 regtangle path (via points)
-#### 5.2 circle path
-
-### Conclusion
 
 ## Our Team
 
