@@ -173,16 +173,63 @@ Hypothesis: The movement trajectories may not align due to various factors such 
 
 Two sets of command will be created
 
-Set 1: Movement in a 1*1 meter square
-
 
 ### 4.1 regtangle path (via points)
+
+```
+def rectangle_path(self):
+        spent_time = (self.get_clock().now().nanoseconds - self.prev_time_control.nanoseconds)/S_TO_NS
+        easy_gain = 1.0
+
+        if (spent_time > 0 and spent_time < 10):
+            
+            self.publish_robot_twist(0.0, -0.157 * easy_gain)
+        elif (spent_time > 10 and spent_time < 20):
+            self.publish_robot_twist(0.1 * easy_gain, 0.0)
+
+        elif (spent_time > 20 and spent_time < 30):
+            self.publish_robot_twist(0.0, -0.157 * easy_gain)
+
+        elif (spent_time > 30 and spent_time < 40):
+            self.publish_robot_twist(0.1 * easy_gain, 0.0)
+
+        elif (spent_time > 40 and spent_time < 50):
+            self.publish_robot_twist(0.0, -0.157 * easy_gain)
+
+        elif (spent_time > 50 and spent_time < 60):
+            self.publish_robot_twist(0.1 * easy_gain, 0.0)
+
+        elif (spent_time > 60 and spent_time < 70):
+            self.publish_robot_twist(0.0, -0.157 * easy_gain)
+
+        elif (spent_time > 70 and spent_time < 80):
+            self.publish_robot_twist(0.1 * easy_gain, 0.0)
+
+        elif (spent_time > 80 and spent_time < 90):
+            self.publish_robot_twist(0.0, -0.157 * easy_gain)
+
+        else:
+            self.publish_robot_twist(0.0, 0.0)
+
+```
+
 https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/75566343/bb18568b-762e-4abd-98b4-9f5bb295e32b
 
+
 ### 4.2 circle path
+
+```
+def circle_around_path(self):
+        spent_time = (self.get_clock().now().nanoseconds - self.prev_time_control.nanoseconds)/S_TO_NS
+        if (spent_time > 0 and spent_time < 1000):
+            self.publish_robot_twist(0.5, 0.5)
+        else:
+            self.publish_robot_twist(0.0, 0.0)
+```
+
 https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/75566343/17a5f61e-d245-4abe-b685-1a071f6ed9c0
 
-
+From the experiment, it can be observed that circular movement can complete a full circle and converge close to the original point, as evidenced by the actual positions and those displayed in the RVIZ program. However, with square movement, it is found that the intended objective cannot be achieved. Specifically, the wheel rotation cannot complete the circle as specified in the designed instructions. This incomplete rotation causes accumulating errors in subsequent rotations. It is hypothesized that several factors contribute to this issue, such as unstable internet signals and delays in sending instruction sets, leading to inconsistencies in timing.
 
 
 ## Our Team
