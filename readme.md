@@ -167,11 +167,20 @@ void ROBOT_CONTROL::readWheelVelocity(float* wheelVel){
 
 The motion control was tested using a twist message, computed from the inverse kinematics, yielding a wheel velocity of approximately 2.96 rad/s. Upon observation, it was found that the measured values closely matched the expected ones. Initially, there was a gradual increase in acceleration, followed by a period where the velocity stabilized. Various errors may have occurred during the experiment, stemming from multiple factors such as wheel distance prediction inaccuracies, wheel radius estimation in inverse kinematics, frictional forces, or discrepancies in distance measurement.
 
-## 2. Experimenting to find the relationship between robot's real values and wheel odometry values
-
-## 3. Experimenting to find the relationship between the command (cmd_vel) and the movement of the robot
+## 2. & 3. Experimenting to find the relationship between robot's real values and wheel odometry values and Experimenting to find the relationship between the command (cmd_vel) and the movement of the robot
 ![image](https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/75566343/6ed192da-8e41-416a-845b-a4804da9652f)
 
+The purpose of the experiment is to find the relationship between the observed distance, wheel odometry calculated, and the expected distance.
+
+The hypothesis of the experiment states that the distance the robot can move will be less than the actual distance due to frictional forces occurring on the surface during motion. This would result in the observed distance being less than the calculated distance.
+
+The table above will show the discrepancies that occur. The experiment involves two trials, each consisting of sending command velocity (cmd_vel) messages.
+
+In the first trial, a cmd_vel message with a linear velocity of 0.1 m/s is published for 10 seconds. The robot should move 1 meter. From the experiment, it was found that the robot actually moved with an average position in the x-axis at 0.9653 meters and in the y-axis at -0.0303 meters. The average calculated wheel odometry in the x-axis was 0.96 meters and in the y-axis was 0.033 meters.
+
+In the second trial, a cmd_vel message with a linear velocity of 0.2 m/s is published for 10 seconds. The robot should move 2 meters. From the experiment, it was found that the robot actually moved with an average position in the x-axis at 1.9432 meters and in the y-axis at 0.019 meters. The average calculated wheel odometry in the x-axis was 1.938 meters and in the y-axis was 0.022 meters.
+
+From the experiments, it was observed that the robot moved less than the expected distance, which could be due to frictional forces on the surface during motion. Additionally, it was observed that the robot did not move in a straight line, possibly due to misalignment of the motors.
 
 ## 4. Experimenting with movement according to scenarios 1 and 2
 
