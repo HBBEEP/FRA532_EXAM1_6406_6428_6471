@@ -170,9 +170,9 @@ The motion control was tested using a twist message, computed from the inverse k
 ## 2. & 3. Experimenting to find the relationship between robot's real values and wheel odometry values and Experimenting to find the relationship between the command (cmd_vel) and the movement of the robot
 ![image](https://github.com/HBBEEP/FRA532_EXAM1_6406_6428_6471/assets/75566343/6ed192da-8e41-416a-845b-a4804da9652f)
 
-The purpose of the experiment is to find the relationship between the observed distance, wheel odometry calculated, and the expected distance.
+**The purpose of the experiment : ** is to find the relationship between the observed distance, wheel odometry calculated, and the expected distance.
 
-The hypothesis of the experiment states that the distance the robot can move will be less than the actual distance due to frictional forces occurring on the surface during motion. This would result in the observed distance being less than the calculated distance.
+**The hypothesis of the experiment : ** states that the distance the robot can move will be less than the actual distance due to frictional forces occurring on the surface during motion. This would result in the observed distance being less than the calculated distance.
 
 The table above will show the discrepancies that occur. The experiment involves two trials, each consisting of sending command velocity (cmd_vel) messages.
 
